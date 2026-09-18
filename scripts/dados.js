@@ -310,49 +310,49 @@ window.LOKCAR_DADOS = (function () {
     {
       id: 'v01', modelo: 'Porsche 911', placa: 'DEM1A23', ano: 2022,
       categoria: 'Esportivo', cambio: 'Automático', lugares: 4, ar: true,
-      cor: 'Preto', img: '../Public/porsche%20preta.jpg',
+      cor: 'Preto', img: 'Public/porsche%20preta.jpg',
       km: 28450, status: 'disponivel',
       aquisicao: '2022-03-14'
     },
     {
       id: 'v02', modelo: 'Porsche Cayenne', placa: 'DEM2B45', ano: 2023,
       categoria: 'SUV de luxo', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Preto', img: '../Public/porsche-bg-lateral.jpg.webp',
+      cor: 'Preto', img: 'Public/porsche-bg-lateral.jpg.webp',
       km: 31200, status: 'reservado',
       aquisicao: '2023-01-20'
     },
     {
       id: 'v03', modelo: 'Mercedes-Benz Classe C', placa: 'DEM3C67', ano: 2022,
       categoria: 'Sedan executivo', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Preto', img: '../Public/mercedes%20preta.jpg',
+      cor: 'Preto', img: 'Public/mercedes%20preta.jpg',
       km: 44180, status: 'locado',
       aquisicao: '2022-07-08'
     },
     {
       id: 'v04', modelo: 'Audi A5 Sportback', placa: 'DEM4D89', ano: 2023,
       categoria: 'Sportback', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Preto', img: '../Public/audi%20preta.jpg',
+      cor: 'Preto', img: 'Public/audi%20preta.jpg',
       km: 23960, status: 'reservado',
       aquisicao: '2023-04-02'
     },
     {
       id: 'v05', modelo: 'Hyundai HB20', placa: 'DEM5E10', ano: 2021,
       categoria: 'Hatch', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Prata', img: '../Public/OIP%20(1).jpg',
+      cor: 'Prata', img: 'Public/OIP%20(1).jpg',
       km: 61240, status: 'reservado',
       aquisicao: '2021-09-30'
     },
     {
       id: 'v06', modelo: 'Hyundai HB20', placa: 'DEM6F32', ano: 2022,
       categoria: 'Hatch', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Prata', img: '../Public/hb20-prata.webp',
+      cor: 'Prata', img: 'Public/hb20-prata.webp',
       km: 39710, status: 'reservado',
       aquisicao: '2022-11-11'
     },
     {
       id: 'v07', modelo: 'Chevrolet Onix Plus', placa: 'DEM7G54', ano: 2022,
       categoria: 'Sedan', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Branco', img: '../Public/Onix-Plus-Branco.jpg',
+      cor: 'Branco', img: 'Public/Onix-Plus-Branco.jpg',
       /* A GALERIA. `img` continua sendo a principal — é ela que a
          ficha do veículo, o cartão da frota e a prévia da reserva
          já leem, e renomear o campo quebraria os três de uma vez.
@@ -360,35 +360,35 @@ window.LOKCAR_DADOS = (function () {
          e é sobre `img` + `imgs` que o trocador de imagem trabalha.
          Os dois arquivos existem em Public/ e não são usados por
          nenhuma tela do sistema hoje. */
-      imgs: ['../Public/onix.png', '../Public/onix-branco.png'],
+      imgs: ['Public/onix.png', 'Public/onix-branco.png'],
       km: 57890, status: 'locado',
       aquisicao: '2022-05-19'
     },
     {
       id: 'v08', modelo: 'Mercedes-Benz GLC', placa: 'DEM8H76', ano: 2023,
       categoria: 'SUV de luxo', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Branco', img: '../Public/mercedes-glc-branco.webp',
+      cor: 'Branco', img: 'Public/mercedes-glc-branco.webp',
       km: 18420, status: 'reservado',
       aquisicao: '2023-08-25'
     },
     {
       id: 'v09', modelo: 'Audi Q8', placa: 'DEM9I98', ano: 2023,
       categoria: 'SUV de luxo', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Branco', img: '../Public/audi-q8-branco.webp',
+      cor: 'Branco', img: 'Public/audi-q8-branco.webp',
       km: 15380, status: 'locado',
       aquisicao: '2023-10-06'
     },
     {
       id: 'v10', modelo: 'Chevrolet Onix', placa: 'DEM0J21', ano: 2021,
       categoria: 'Hatch', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Branco', img: '../Public/onix-branco.webp',
+      cor: 'Branco', img: 'Public/onix-branco.webp',
       km: 72350, status: 'manutencao',
       aquisicao: '2021-06-17'
     },
     {
       id: 'v11', modelo: 'Chevrolet Onix Plus', placa: 'DEM1K43', ano: 2023,
       categoria: 'Sedan', cambio: 'Automático', lugares: 5, ar: true,
-      cor: 'Branco', img: '../Public/Onix-Plus-Branco.jpg',
+      cor: 'Branco', img: 'Public/Onix-Plus-Branco.jpg',
       km: 9840, status: 'indisponivel',
       aquisicao: '2023-12-01'
     }
