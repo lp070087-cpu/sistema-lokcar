@@ -255,6 +255,17 @@
   border-bottom: 1px solid var(--line-soft);
 }
 
+/* Em tela estreita o rótulo sobe para cima do valor. Duas colunas
+   aqui seriam 120px de rótulo contra ~150px de valor num
+   telefone de 360px — e o valor é justamente o que a ficha
+   existe para mostrar. */
+@media (max-width: 560px) {
+  .ficha > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+}
+
 .ficha > div:last-child {
   border-bottom: none;
 }
@@ -288,12 +299,31 @@
   margin-bottom: var(--gap);
 }
 
+/* Variante de quatro colunas do painel. Existe porque a tela
+   FINANCEIRO tem quatro números, e não seis: com três colunas
+   sobraria um buraco na segunda linha.
+
+   ATENÇÃO À ORDEM — esta regra é BASE, e por isso vem ANTES das
+   consultas de mídia abaixo. Ela já morou depois delas, com a
+   mesma especificidade de `.kpis--4` dentro do `@media`, e a
+   consequência era silenciosa: quem vence empate de
+   especificidade é quem vem por último, então as quatro colunas
+   voltavam a valer em QUALQUER largura. O resultado era o
+   `.kpis--4` espremido em quatro colunas num telefone de 360px —
+   exatamente as telas Financeiro, Prorrogações, Vistorias,
+   Documentos, Manutenções, Ocorrências e Notificações. */
+.kpis--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 @media (min-width: 1500px) {
   .kpis {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
+/* Até 900px os números vão para duas colunas. A largura do
+   cartão passa a ser a metade da tela, e não um quarto dela. */
 @media (max-width: 900px) {
   .kpis,
   .kpis--4 {
@@ -301,19 +331,14 @@
   }
 }
 
-@media (max-width: 520px) {
+/* Só no telefone muito estreito o cartão fica sozinho na linha:
+   aí duas colunas já deixariam o VALOR sem caber, e número
+   cortado é pior do que lista comprida. */
+@media (max-width: 420px) {
   .kpis,
   .kpis--4 {
     grid-template-columns: minmax(0, 1fr);
   }
-}
-
-/* Variante de quatro colunas do painel. Existe porque a tela
-   FINANCEIRO tem quatro números, e não seis: com três colunas
-   sobraria um buraco na segunda linha. Vale a mesma cascata
-   responsiva de `.kpis`, declarada logo acima. */
-.kpis--4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 /* Valor em vermelho dentro de um `.kpi`. Existe só para o
@@ -338,6 +363,11 @@
   border-radius: var(--r-md);
   position: relative;
   overflow: hidden;
+  /* `min-width: 0` é o que autoriza o cartão a encolher dentro da
+     grade. Sem ele, o texto mais longo do cartão (o valor) define
+     a largura da coluna, a grade estoura e a página inteira ganha
+     rolagem horizontal. */
+  min-width: 0;
   transition: border-color var(--t-fast), background var(--t-fast);
 }
 
@@ -355,6 +385,11 @@
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--tx-3);
+  /* Com 0.13em de entreletra e caixa alta, um rótulo como
+     "APROVADAS PELA REGRA" é largo. Ele quebra em duas linhas
+     quando falta espaço — nunca sai da caixa. */
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .kpi__ico {
@@ -375,6 +410,21 @@
   line-height: 1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+  /* O número do cartão NUNCA quebra. Sem isto, um "R$ 4.562,00"
+     num cartão estreito parte em duas ou três linhas — "R$" numa,
+     "4.562,00" na outra — e o valor mais importante da tela vira
+     o mais difícil de ler. O que cede é a COLUNA, não o número;
+     é para isso que a grade usa `minmax(0, 1fr)`. */
+  white-space: nowrap;
+}
+
+/* O cartão encolhe junto com a coluna: se ainda assim não couber
+   (tela muito estreita, valor muito longo), o número reduz de
+   tamanho em vez de escapar pela borda. */
+@media (max-width: 520px) {
+  .kpi__val {
+    font-size: clamp(1.25rem, 6.4vw, 1.7rem);
+  }
 }
 
 .kpi__val small {
@@ -389,6 +439,12 @@
   font-size: 0.71rem;
   color: var(--tx-3);
   line-height: 1.4;
+  /* A nota PODE quebrar — ela é prosa ("3 lançamentos somados").
+     O que ela não pode é abrir uma fenda na coluna: `min-width: 0`
+     e a quebra por palavra evitam que um termo comprido empurre a
+     largura da grade. */
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .kpi__nota b {
@@ -436,8 +492,18 @@
   border-color: var(--line-soft);
 }
 
+/* O valor do contador de apoio herda o `nowrap` de `.kpi__val`,
+   mas aqui a coluna é mais estreita (três dentro de um bloco, e
+   o bloco pode estar dentro de outra coluna). Por isso o número
+   cede tamanho antes de escapar da caixa. */
 .kpis--mini .kpi__val {
   font-size: 1.05rem;
+}
+
+@media (max-width: 520px) {
+  .kpis--mini .kpi__val {
+    font-size: 0.95rem;
+  }
 }
 
 @media (min-width: 1500px) {
@@ -808,6 +874,15 @@
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--bg-field);
+  /* O controle tem largura própria; dentro de um cabeçalho que
+     aperta, ele encolhe até caber em vez de empurrar a barra. */
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.opcoes::-webkit-scrollbar {
+  height: 0;
 }
 
 .opcoes__b {
@@ -817,7 +892,19 @@
   font-size: 0.74rem;
   font-weight: 600;
   white-space: nowrap;
+  /* "14 dias", "21 dias" e "28 dias" nunca se partem, e o botão
+     não encolhe: quem rola é o controle. */
+  flex: 0 0 auto;
   transition: background-color var(--t-fast), color var(--t-fast);
+}
+
+/* No celular o controle segmentado tem área de toque confortável
+   e rola na horizontal se o conjunto não couber. */
+@media (max-width: 560px) {
+  .opcoes__b {
+    padding: 0.5rem 0.9rem;
+    min-height: 36px;
+  }
 }
 
 .opcoes__b:hover {
@@ -1274,6 +1361,39 @@
   color: var(--tx-4);
 }
 
+/* ------------------------------------------------------------
+   LINHA DO TEMPO NO CELULAR
+
+   A linha é `84px | 22px | texto`. Num telefone de 360px isso
+   gasta 106px + dois vãos de 0,7rem — quase METADE da largura —
+   antes de a primeira palavra do texto começar. O texto útil
+   sobra em ~200px, e é por isso que estes cartões (os choques de
+   agenda do calendário, o histórico do cliente, as faixas da
+   ficha do carro) apareciam estreitos e compridos.
+
+   Estreitar a coluna da data não perde nada: ela carrega
+   `12/09`, cinco caracteres. O marcador também não precisa de
+   22px para um ponto de 8px. O que ganha largura é a leitura. */
+@media (max-width: 620px) {
+  .hist__i {
+    grid-template-columns: minmax(40px, auto) 16px minmax(0, 1fr);
+    gap: 0.55rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .hist__m::before {
+    bottom: -0.9rem;
+  }
+
+  /* Os botões de cada item ocupam a linha inteira, um por linha.
+     Três botões espremidos em 200px viram três alvos que o dedo
+     erra e três rótulos cortados ("Abrir a reser…"). */
+  .hist__i .bt {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
 /* ============================================================
    5 · LOCAÇÕES
    ============================================================ */
@@ -1470,6 +1590,14 @@
    Uma linha por veículo, as barras de reserva e locação sobre
    uma grade de dias. O cabeçalho de dias gruda no topo ao rolar,
    porque em 11 veículos a lista passa da tela.
+
+   REGRA CENTRAL: a grade NUNCA encolhe abaixo de um mínimo. Um
+   calendário de 21 dias em 360px dá 17px por dia — o número do
+   dia não cabe, a faixa vira um risco e o nome do carro fica
+   espremido numa tirinha com a página inteira vazia ao lado. O
+   que cede é a JANELA: a grade mantém a largura de leitura e
+   rola na horizontal, que é o gesto natural de agenda no
+   celular. O calendário rola; a página, não.
    ============================================================ */
 .cal {
   border: 1px solid var(--line);
@@ -1481,10 +1609,39 @@
 .cal__rolagem {
   overflow-x: auto;
   overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* A barra de rolagem aparece ao arrastar; em repouso ela não
+     fica desenhada por cima da legenda. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-hard) transparent;
+}
+
+.cal__rolagem::-webkit-scrollbar {
+  height: 6px;
+}
+
+.cal__rolagem::-webkit-scrollbar-thumb {
+  background: var(--line-hard);
+  border-radius: 999px;
+}
+
+.cal__rolagem::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .cal__grade {
   min-width: 1040px;
+}
+
+/* No celular e no tablet a grade mantém um mínimo PRÓPRIO, um
+   pouco menor que o do desktop (1040px existe para caber 21 dias
+   com folga), mas ainda suficiente para o dia ter 34px e o nome
+   do veículo caber. Abaixo disso o número do dia e o nome do
+   carro começam a se atropelar. */
+@media (max-width: 1024px) {
+  .cal__grade {
+    min-width: 760px;
+  }
 }
 
 .cal__hd {
@@ -1684,6 +1841,26 @@
   vertical-align: middle;
 }
 
+/* No celular a legenda tem seis amostras de cor, a frase de
+   rodapé e um aviso longo. Cada item ganha a linha inteira: em
+   duas colunas de 170px as frases viram colunas de duas palavras
+   e a legenda fica mais alta que o calendário que ela explica.
+   A frase de rodapé perde o `margin-left:auto` — quebrada, ela
+   deixaria de ser o último item da linha e o `auto` só abriria
+   um buraco no meio. */
+@media (max-width: 780px) {
+  .cal__legenda {
+    gap: 0.5rem 0.9rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .cal__legenda > span {
+    flex: 1 1 100%;
+    margin-left: 0 !important;
+    line-height: 1.5;
+  }
+}
+
 .cal__nav {
   display: flex;
   align-items: center;
@@ -1696,6 +1873,37 @@
   color: var(--tx-2);
   min-width: 132px;
   text-align: center;
+}
+
+/* No celular a barra de navegação do calendário tem QUATRO
+   botões, um rótulo de período e o seletor de dias: não cabe numa
+   linha de 360px. Aqui ela quebra em linhas em vez de espremer os
+   botões — e o rótulo do período, que é o que diz ONDE o operador
+   está, sobe para a primeira linha, sozinho, porque é para ele
+   que se olha primeiro. Sem o `order`, ele ficaria no meio dos
+   botões e ainda herdaria o `margin-left:auto` do seletor, que
+   num contexto quebrado empurra a linha inteira para a direita e
+   deixa um vão à esquerda. */
+@media (max-width: 780px) {
+  .cal__nav {
+    flex-wrap: wrap;
+    row-gap: 0.55rem;
+  }
+
+  .cal__nav b {
+    order: -1;
+    flex: 1 1 100%;
+    min-width: 0;
+    text-align: left;
+    padding-bottom: 0.15rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  /* O seletor de dias deixa de ser empurrado para a direita: num
+     contêiner estreito o `auto` só cria buraco. */
+  .cal__nav .opcoes {
+    margin-left: 0 !important;
+  }
 }
 
 /* ============================================================
@@ -3243,5 +3451,125 @@
 
   .pro__seta2 {
     display: none;
+  }
+}
+
+/* ============================================================
+   19 · MICROINTERAÇÕES
+   ------------------------------------------------------------
+   Três regras, e nenhuma além: alvo clicável tem cursor, alvo
+   clicável responde ao ponteiro com um levantar de 2px, e alvo
+   clicável responde ao TOQUE com um afundar de 1,5%.
+
+   O que fica de fora, de propósito: nada de brilho pulsante, nada
+   de escala exagerada, nada de sombra colorida. O sistema é uma
+   ferramenta de balcão usada oito horas por dia, e movimento
+   demais cansa quem olha a tela inteira. O retorno existe para
+   dizer "isto é clicável" e "seu clique pegou" — e para nada
+   mais.
+
+   O afundar no `:active` não é enfeite no celular: lá não existe
+   hover, e sem ele o dedo toca e a tela parece não ter ouvido.
+   ------------------------------------------------------------ */
+.hist__i[data-acao],
+.doc__falta,
+.cfg-falta,
+.nt__ir,
+.cfg-ir,
+.pro__c,
+a.kpi {
+  cursor: pointer;
+}
+
+/* Levantar discreto. `translateY(-2px)` é o mesmo deslocamento
+   que o cartão de veículo já usa — manter o número igual faz o
+   sistema inteiro reagir com a mesma intensidade. */
+a.kpi,
+.pro__c,
+.nt__ir,
+.cfg-ir,
+.cfg-falta,
+.doc__falta,
+.hist__i[data-acao] {
+  transition: border-color var(--t-fast), background-color var(--t-fast),
+              transform var(--t-med), color var(--t-fast);
+}
+
+a.kpi:hover,
+.pro__c:hover,
+.cfg-ir:hover,
+.cfg-falta:hover,
+.doc__falta:hover,
+.hist__i[data-acao]:hover {
+  transform: translateY(-2px);
+}
+
+/* O cartão de indicador do painel é o único com moldura e fundo
+   próprios: o levantar dele vem junto com a borda um pouco mais
+   clara, senão o movimento sozinho parece um tremor da página. */
+a.kpi:hover {
+  border-color: var(--line-hard);
+  background: var(--bg-elev);
+}
+
+/* Contrapeso: o levantar não pode empurrar a linha do tempo nem
+   a grade, porque o item continua ocupando o mesmo espaço. `z`
+   garante que o cartão levantado passe POR CIMA dos vizinhos em
+   vez de ficar cortado por eles. */
+a.kpi:hover,
+.pro__c:hover,
+.cfg-ir:hover,
+.doc__falta:hover,
+.hist__i[data-acao]:hover {
+  position: relative;
+  z-index: 1;
+}
+
+/* O toque. Vale no celular e no desktop, e é a única resposta
+   que existe onde não há hover. */
+.cfg-falta:active,
+.nt__ir:active,
+.cfg-ir:active,
+.hist__i[data-acao]:active,
+.vcl:active {
+  transform: scale(0.985);
+}
+
+/* O cartão de veículo já levanta no hover (`-2px`, na seção 10).
+   O que faltava era o toque: num telefone não existe hover, então
+   tocar o cartão da frota não dava retorno nenhum até a tela
+   trocar — e a troca de tela é justamente o que demora. */
+.vcl {
+  cursor: pointer;
+}
+
+/* O anel de foco é para quem navega por teclado, e não substitui
+   o hover: quem usa ponteiro nunca o vê. */
+a.kpi:focus-visible,
+.pro__c:focus-visible,
+.nt__ir:focus-visible,
+.cfg-ir:focus-visible,
+.cfg-falta:focus-visible,
+.doc__falta:focus-visible {
+  outline: 2px solid var(--accent-a55);
+  outline-offset: 2px;
+}
+
+/* Movimento reduzido desliga o deslocamento e MANTÉM a resposta:
+   a cor da borda e o fundo continuam mudando no hover, e o
+   `:active` não fica sem retorno nenhum. */
+@media (prefers-reduced-motion: reduce) {
+  a.kpi:hover,
+  .pro__c:hover,
+  .cfg-ir:hover,
+  .cfg-falta:hover,
+  .doc__falta:hover,
+  .hist__i[data-acao]:hover,
+  .cfg-falta:active,
+  .nt__ir:active,
+  .cfg-ir:active,
+  .hist__i[data-acao]:active,
+  .vcl:active {
+    transform: none;
   }
 }

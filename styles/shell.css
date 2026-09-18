@@ -429,6 +429,11 @@
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
+  /* A migalha é o que sobra: ela cede espaço para o sino e para
+     o "Ver o site", que são ações e não podem encolher. Sem o
+     `flex` aqui, a migalha empurraria o sino para fora da tela
+     numa janela estreita em vez de encurtar sozinha. */
+  flex: 1 1 auto;
   font-size: 0.78rem;
   color: var(--tx-3);
 }
@@ -448,6 +453,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* Sem `min-width: 0` o item de flex nunca encolhe além da
+     própria palavra: um nome de tela longo estouraria a barra em
+     vez de virar reticências. */
+  min-width: 0;
 }
 
 .top__acoes {
@@ -455,6 +464,9 @@
   align-items: center;
   gap: 0.55rem;
   margin-left: auto;
+  /* As ações do topo nunca encolhem nem quebram: são um sino e um
+     atalho, e os dois precisam continuar tocáveis. */
+  flex: none;
 }
 
 .top__sino {
@@ -618,7 +630,16 @@
 }
 
 @media (max-width: 1024px) {
+  /* A gaveta não tem largura fixa no celular: `min()` mantém os
+     260px de leitura onde eles cabem e cede para 84vw onde não
+     cabem. Num telefone de 360px, 260px de menu deixariam 100px
+     de página à mostra — e o véu, que é o alvo do toque para
+     fechar, viraria uma tira de 100px que o dedo erra. Com 84vw
+     sobram ~58px de véu, mais a borda do menu, e ainda se vê o
+     conteúdo atrás. */
   .rail {
+    width: min(var(--rail-w), 84vw);
+    max-width: 100vw;
     transform: translateX(-100%);
     box-shadow: 24px 0 60px rgba(0, 0, 0, 0.55);
   }
@@ -723,6 +744,68 @@
 
   .top__demo {
     display: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   CABEÇALHO NO CELULAR
+
+   A barra do topo tem, da esquerda para a direita: menu, migalha,
+   sino e "Ver o site". Num telefone de 360px isso são 328px de
+   largura útil, e só o menu mais o sino mais o atalho já gastam
+   ~200px. A conta de espaço é apertada, e a ordem de prioridade
+   importa: menu e "Ver o site" são as duas portas de saída da
+   tela, e nenhuma delas pode encolher.
+
+   O que cede é a migalha. Ela perde o prefixo da seção — "Visão
+   geral /" — e fica só com o nome da tela atual, que é o que
+   responde "onde eu estou". O nome da seção continua no menu, e
+   repeti-lo aqui custaria metade da barra. O nome da tela, se
+   ainda não couber, vira reticências: melhor "Calendário…" do
+   que a barra empurrando o sino para fora.
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .top {
+    gap: 0.6rem;
+  }
+
+  .top__trilha {
+    gap: 0;
+    font-size: 0.76rem;
+  }
+
+  /* O prefixo e o separador saem juntos: um separador sozinho,
+     sem o que ele separa, é ruído. */
+  .top__trilha > b,
+  .top__trilha > span {
+    display: none;
+  }
+
+  /* As três ações do topo ganham área de toque de verdade. O sino
+     é o alvo mais errado da barra hoje: 34px é menos que o polegar
+     acerta, e é ele que carrega o número de pendências. */
+  .top__burger,
+  .top__sino {
+    width: 44px;
+    height: 44px;
+  }
+
+  .top__voltar {
+    min-height: 44px;
+    padding-inline: 0.7rem;
+  }
+}
+
+/* No telefone muito estreito o atalho aperta o próprio
+   espaçamento interno — 0,2rem de padding em cada lado e 0,1rem
+   entre o ícone e o texto. O rótulo CONTINUA escrito: "Ver o
+   site" é a única saída para o site público, e um botão que virou
+   só um ícone de seta não diz para onde leva. O que cede é o
+   respiro, não a palavra nem o alvo de toque. */
+@media (max-width: 420px) {
+  .top__voltar {
+    padding-inline: 0.6rem;
+    gap: 0.3rem;
   }
 }
 

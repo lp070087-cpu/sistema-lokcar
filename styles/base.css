@@ -242,6 +242,31 @@ table {
   transform: translateY(1px);
 }
 
+/* ------------------------------------------------------------
+   O BOTÃO NO CELULAR
+   ------------------------------------------------------------
+   No desktop o botão é denso de propósito: a tela é larga, o
+   ponteiro é preciso e a barra de ações cabe de lado. No celular
+   o alvo é o dedo, e 0.62rem de preenchimento vertical dá um
+   botão de ~31px — abaixo do conforto de 44px que o polegar
+   pede.
+
+   O mínimo é aplicado em `min-height`, e não em preenchimento,
+   para o botão continuar com a MESMA altura quando o rótulo é
+   curto ou longo. Os botões pequenos de dentro de tabela
+   (`.bt--sil`) ficam de fora: eles são terciários, vivem em
+   linha densa e inflá-los quebraria a tabela. --- */
+@media (max-width: 720px) {
+  .bt {
+    min-height: 44px;
+    padding: 0.7rem 1.1rem;
+  }
+
+  .bt--sil {
+    min-height: 36px;
+  }
+}
+
 .bt__ico {
   width: 15px;
   height: 15px;
@@ -427,6 +452,42 @@ table {
   align-items: center;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------
+   AS AÇÕES DO TOPO NO CELULAR
+   ------------------------------------------------------------
+   "Nova vistoria", "Exportar", "Abrir o calendário da frota" —
+   cada tela tem uma ou duas. Ao lado do título elas ficariam com
+   a sobra da linha, que num telefone é quase nada; e dois botões
+   de 44px espremidos lado a lado viram dois alvos que o dedo
+   erra.
+
+   Abaixo de 720px a barra ocupa a largura inteira e os botões se
+   dividem nela. A ação principal continua sendo a primeira e
+   ganha a linha de cima quando sozinha não cabe.
+
+   No desktop nada disto vale: lá a barra segue encostada à
+   direita, na mesma linha do título. --- */
+@media (max-width: 720px) {
+  .pghd {
+    align-items: stretch;
+  }
+
+  .pghd__acts {
+    width: 100%;
+  }
+
+  /* Com um só botão, ele ocupa a linha: alvo grande, sem dúvida
+     sobre onde tocar. Com dois ou mais, dividem o espaço em
+     partes iguais e quebram para a linha de baixo se faltar. */
+  .pghd__acts > .bt {
+    flex: 1 1 auto;
+  }
+
+  .pghd__acts > .bt--pri {
+    flex: 1 1 100%;
+  }
 }
 
 /* --- Grade de métricas ---------------------------------------- */
@@ -622,6 +683,19 @@ table {
   gap: 0.9rem var(--gap);
 }
 
+/* Estas três grades são de FORMULÁRIO, não de painel: cada célula
+   é um campo com rótulo em cima. Duas ou três colunas de campo
+   numa tela de 360px dão caixas de 100px com o rótulo cortado, e
+   é aí que o operador erra o campo. Até 900px o formulário passa
+   a uma coluna. */
+@media (max-width: 900px) {
+  .grid2,
+  .grid3,
+  .grid4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* --- Busca ----------------------------------------------------- */
 .busca {
   position: relative;
@@ -662,12 +736,54 @@ table {
   border-color: var(--accent-a55);
 }
 
-/* --- Abas / filtros em pílula ---------------------------------- */
+/* --- Abas / filtros em pílula ----------------------------------
+   A barra de abas ("Todos / A resolver / Vencidos …") já quebra
+   em várias linhas, e é assim que ela deve continuar no desktop:
+   quebrar mantém todas as abas visíveis de uma vez.
+
+   Abaixo de 560px a quebra sozinha deixa de servir: quatro
+   rótulos longos viram quatro linhas, a barra come meia tela e
+   empurra a lista para baixo. Aí ela passa a rolar na horizontal,
+   que é o gesto que já existe no celular. A barra de rolagem fica
+   discreta — visível ao arrastar, não no repouso. --- */
 .tabs {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-hard) transparent;
+    -webkit-overflow-scrolling: touch;
+    /* Sem isto o `flex` encolhe os botões até o texto apertar em
+       vez de rolar. */
+    scroll-snap-type: x proximity;
+  }
+
+  .tabs::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .tabs::-webkit-scrollbar-thumb {
+    background: var(--line-hard);
+    border-radius: 999px;
+  }
+
+  .tabs::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .tabs__b {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    /* Área de toque confortável: o dedo não erra o alvo. */
+    min-height: 38px;
+  }
 }
 
 .tabs__b {
@@ -1000,7 +1116,18 @@ table {
 .u-sm     { font-size: 0.78rem; }
 .u-xs     { font-size: 0.72rem; }
 .u-b      { font-weight: 600; }
-.u-tab    { font-variant-numeric: tabular-nums; }
+/* Número tabular E indivisível.
+
+   `.u-tab` é usada só em valor atômico: quantia em reais, data,
+   hora, quilometragem, telefone, contagem de dias. Nenhum desses
+   pedaços faz sentido partido — "R$ 4.562,00" cortado entre "R$"
+   e o número é ilegível, e "(81) 99753-0453" partido ao meio não
+   é um telefone. É por isso que o `nowrap` mora aqui, junto do
+   `tabular-nums`, e não espalhado por cada tela.
+
+   Isto NÃO vale para prosa: texto corrido continua quebrando
+   normalmente, porque não usa esta classe. */
+.u-tab    { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .u-nowrap { white-space: nowrap; }
 .u-oculto { display: none !important; }
 .u-sr {
