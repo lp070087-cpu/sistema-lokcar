@@ -1,0 +1,980 @@
+/* ============================================================
+   LOK CAR — SISTEMA · shell.css
+   ------------------------------------------------------------
+   A casca do aplicativo: trilho de menu, barra do topo, área de
+   conteúdo, gaveta do celular, modal e aviso de canto.
+
+   Desenho: duas colunas fixas. O trilho é ESCURO e o conteúdo é
+   um pouco mais claro — a hierarquia vem da profundidade, não de
+   sombra. O trilho é a única peça que nunca rola junto, então o
+   menu está sempre no mesmo lugar em qualquer módulo.
+   ============================================================ */
+
+.sis {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg-deep);
+}
+
+/* ============================================================
+   1 · TRILHO DE MENU
+   ============================================================ */
+.rail {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  width: var(--rail-w);
+  background: var(--bg-rail);
+  border-right: 1px solid var(--line-soft);
+  transition: width var(--t-med), transform var(--t-med);
+}
+
+/* --- Marca ----------------------------------------------------- */
+.rail__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--top-h);
+  padding: 0 1.05rem;
+  flex: none;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.rail__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  font-family: var(--f-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 7px;
+}
+
+.rail__word {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.rail__nome {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.rail__sub {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  white-space: nowrap;
+}
+
+/* --- Navegação -------------------------------------------------- */
+.rail__nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.1rem 0.7rem 1.4rem;
+}
+
+.rail__nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rail__group {
+  margin-bottom: 1.3rem;
+}
+
+.rail__group:last-child {
+  margin-bottom: 0;
+}
+
+.rail__groupT {
+  display: block;
+  padding: 0 0.5rem 0.5rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tx-4);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.rail__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.52rem 0.55rem;
+  margin-bottom: 2px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--tx-2);
+  border-radius: var(--r-sm);
+  transition: background-color var(--t-fast), color var(--t-fast);
+}
+
+.rail__link:hover {
+  background: var(--bg-row-hover);
+  color: var(--tx);
+}
+
+.rail__link[aria-current='page'] {
+  background: var(--accent-a14);
+  color: var(--tx);
+  font-weight: 600;
+}
+
+/* O marcador vermelho à esquerda é o que diz "você está aqui"
+   mesmo de relance. Sem ele, a diferença de fundo some num
+   monitor de contraste baixo. */
+.rail__link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  left: -0.7rem;
+  top: 50%;
+  width: 3px;
+  height: 20px;
+  transform: translateY(-50%);
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.rail__ico {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+
+.rail__link[aria-current='page'] .rail__ico {
+  stroke: var(--accent-hover);
+  opacity: 1;
+}
+
+.rail__txt {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rail__tag {
+  flex: none;
+  padding: 0.1rem 0.36rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1.4;
+  border-radius: 999px;
+  background: var(--accent-a18);
+  color: var(--accent-hover);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Usuário ---------------------------------------------------- */
+.rail__user {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1.05rem;
+  border-top: 1px solid var(--line-soft);
+  transition: background-color var(--t-fast);
+  text-align: left;
+  width: 100%;
+}
+
+.rail__user:hover {
+  background: var(--bg-row-hover);
+}
+
+.rail__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--bg-elev);
+  border: 1px solid var(--line-hard);
+  border-radius: 999px;
+}
+
+.rail__perfil {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.rail__perfilNome {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rail__perfilCargo {
+  display: block;
+  font-size: 0.63rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rail__sair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  color: var(--tx-3);
+  border-radius: var(--r-sm);
+  transition: color var(--t-fast), background-color var(--t-fast);
+}
+
+.rail__sair:hover {
+  background: var(--accent-a14);
+  color: var(--accent-hover);
+}
+
+.rail__sair svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- Trilho recolhido (notebook em janela estreita) ------------- */
+.sis[data-rail='fechado'] .rail {
+  width: var(--rail-w-sm);
+}
+
+.sis[data-rail='fechado'] .rail__word,
+.sis[data-rail='fechado'] .rail__txt,
+.sis[data-rail='fechado'] .rail__tag,
+.sis[data-rail='fechado'] .rail__perfil {
+  display: none;
+}
+
+.sis[data-rail='fechado'] .rail__brand,
+.sis[data-rail='fechado'] .rail__user {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.sis[data-rail='fechado'] .rail__groupT {
+  padding-inline: 0;
+  text-align: center;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+}
+
+.sis[data-rail='fechado'] .rail__link {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.sis[data-rail='fechado'] .rail__link[aria-current='page']::before {
+  left: -0.7rem;
+}
+
+.sis[data-rail='fechado'] .rail__nav {
+  padding-inline: 0.6rem;
+}
+
+.sis[data-rail='fechado'] .rail__sair {
+  display: none;
+}
+
+/* O título do grupo no modo recolhido vira só um traço. */
+.sis[data-rail='fechado'] .rail__groupT span {
+  display: none;
+}
+
+.sis[data-rail='fechado'] .rail__groupT::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: var(--line-soft);
+  margin: 0 0.4rem;
+}
+
+/* ============================================================
+   2 · BARRA DO TOPO
+   ============================================================ */
+.sis__main {
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin-left: var(--rail-w);
+  display: flex;
+  flex-direction: column;
+  transition: margin-left var(--t-med);
+}
+
+.sis[data-rail='fechado'] .sis__main {
+  margin-left: var(--rail-w-sm);
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: var(--top-h);
+  flex: none;
+  padding: 0 var(--page-pad);
+  background: var(--bg-top);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.top__burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--tx-2);
+}
+
+.top__burger:hover {
+  border-color: var(--line-hard);
+  color: var(--tx);
+}
+
+.top__burger svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+.top__recolher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  color: var(--tx-3);
+  border-radius: var(--r-sm);
+  transition: background-color var(--t-fast), color var(--t-fast);
+}
+
+.top__recolher:hover {
+  background: var(--bg-row-hover);
+  color: var(--tx);
+}
+
+.top__recolher svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--t-med);
+}
+
+.sis[data-rail='fechado'] .top__recolher svg {
+  transform: rotate(180deg);
+}
+
+/* O caminho da tela atual, no formato "Seção / Tela". É a única
+   migalha do sistema, e ela existe porque há muitos módulos. */
+.top__trilha {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.78rem;
+  color: var(--tx-3);
+}
+
+.top__trilha b {
+  font-weight: 600;
+  color: var(--tx);
+  white-space: nowrap;
+}
+
+.top__trilha span {
+  color: var(--tx-4);
+}
+
+.top__trilha i {
+  font-style: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top__acoes {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: auto;
+}
+
+.top__sino {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  color: var(--tx-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  transition: border-color var(--t-fast), color var(--t-fast);
+}
+
+.top__sino:hover {
+  border-color: var(--line-hard);
+  color: var(--tx);
+}
+
+.top__sino svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.top__sinoN {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+.top__sinoN[hidden] {
+  display: none;
+}
+
+/* Selo permanente de demonstração. Fica sempre visível de
+   propósito: é o lembrete de que nada aqui é dado real. */
+.top__demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.36rem 0.6rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-hover);
+  background: var(--accent-a08);
+  border: 1px solid var(--accent-a30);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.top__voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.42rem 0.7rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--tx-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  transition: border-color var(--t-fast), color var(--t-fast);
+  white-space: nowrap;
+}
+
+.top__voltar:hover {
+  border-color: var(--accent-a55);
+  color: var(--accent-hover);
+}
+
+.top__voltar svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================================================
+   3 · ÁREA DE CONTEÚDO
+   ============================================================ */
+.pg {
+  flex: 1;
+  min-width: 0;
+  padding: 1.6rem var(--page-pad) 3rem;
+}
+
+.pg__inner {
+  max-width: 1560px;
+  margin-inline: auto;
+}
+
+/* Views do roteador. Só a ativa existe no DOM visível. */
+.view[hidden] {
+  display: none;
+}
+
+/* Duas colunas de conteúdo: principal larga + coluna de apoio. */
+.duas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: var(--gap);
+  align-items: start;
+}
+
+.duas--larga {
+  grid-template-columns: minmax(0, 1fr) 440px;
+}
+
+.pilha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+/* Três colunas iguais, para as telas de indicadores. */
+.tres {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+/* ============================================================
+   4 · GAVETA DO CELULAR
+   ============================================================ */
+.veu {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgba(4, 6, 9, 0.66);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--t-med), visibility var(--t-med);
+}
+
+.veu[data-aberto='true'] {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 1024px) {
+  .rail {
+    transform: translateX(-100%);
+    box-shadow: 24px 0 60px rgba(0, 0, 0, 0.55);
+  }
+
+  .sis[data-gaveta='aberta'] .rail {
+    transform: none;
+  }
+
+  .sis__main,
+  .sis[data-rail='fechado'] .sis__main {
+    margin-left: 0;
+  }
+
+  .top__burger {
+    display: inline-flex;
+  }
+
+  .top__recolher {
+    display: none;
+  }
+
+  .sis[data-rail='fechado'] .rail {
+    width: var(--rail-w);
+  }
+
+  .sis[data-rail='fechado'] .rail__word,
+  .sis[data-rail='fechado'] .rail__txt,
+  .sis[data-rail='fechado'] .rail__tag,
+  .sis[data-rail='fechado'] .rail__perfil {
+    display: block;
+  }
+
+  .sis[data-rail='fechado'] .rail__tag {
+    display: inline-block;
+  }
+
+  .sis[data-rail='fechado'] .rail__brand,
+  .sis[data-rail='fechado'] .rail__user {
+    justify-content: flex-start;
+    padding-inline: 1.05rem;
+  }
+
+  .sis[data-rail='fechado'] .rail__groupT {
+    padding-inline: 0.5rem;
+    text-align: left;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+  }
+
+  .sis[data-rail='fechado'] .rail__groupT span {
+    display: inline;
+  }
+
+  .sis[data-rail='fechado'] .rail__groupT::after {
+    display: none;
+  }
+
+  .sis[data-rail='fechado'] .rail__link {
+    justify-content: flex-start;
+    padding-inline: 0.55rem;
+  }
+
+  .sis[data-rail='fechado'] .rail__sair {
+    display: flex;
+  }
+
+  .sis[data-rail='fechado'] .rail__nav {
+    padding-inline: 0.7rem;
+  }
+}
+
+/* A partir daqui a janela é estreita: o conteúdo vira uma
+   coluna só e o cabeçalho da tela empilha. */
+@media (max-width: 1180px) {
+  .duas,
+  .duas--larga {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .duas > aside {
+    order: 2;
+  }
+
+  .tres {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --page-pad: 1rem;
+    --gap: 1rem;
+  }
+
+  .tres {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pg {
+    padding-top: 1.2rem;
+  }
+
+  .top__demo {
+    display: none;
+  }
+}
+
+/* ============================================================
+   5 · MODAL
+   ============================================================ */
+.mod {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--t-med), visibility var(--t-med);
+}
+
+.mod[data-aberto='true'] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mod__veu {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 9, 0.72);
+}
+
+.mod__cx {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 3rem);
+  max-height: calc(100dvh - 3rem);
+  background: var(--bg-card);
+  border: 1px solid var(--line-hard);
+  border-radius: var(--r-lg);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  transform: translateY(10px) scale(0.985);
+  transition: transform var(--t-med);
+  overflow: hidden;
+}
+
+.mod[data-aberto='true'] .mod__cx {
+  transform: none;
+}
+
+.mod--largo .mod__cx {
+  max-width: 860px;
+}
+
+.mod--folha .mod__cx {
+  max-width: 940px;
+  height: calc(100vh - 3rem);
+  height: calc(100dvh - 3rem);
+}
+
+.mod__hd {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+  padding: 1.25rem 1.4rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.mod__t {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.mod__sub {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--tx-3);
+  max-width: 60ch;
+}
+
+.mod__fechar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  color: var(--tx-3);
+  border-radius: var(--r-sm);
+  transition: background-color var(--t-fast), color var(--t-fast);
+}
+
+.mod__fechar:hover {
+  background: var(--bg-row-hover);
+  color: var(--tx);
+}
+
+.mod__fechar svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+}
+
+.mod__bd {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.4rem;
+}
+
+.mod__bd--flush {
+  padding: 0;
+}
+
+.mod__ft {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  flex: none;
+  padding: 1rem 1.4rem;
+  background: var(--bg-alt);
+  border-top: 1px solid var(--line-soft);
+}
+
+.mod__ft--espalha {
+  justify-content: space-between;
+}
+
+/* ============================================================
+   6 · AVISO DE CANTO
+   ------------------------------------------------------------
+   Confirmação de ação. Fica embaixo à direita, some sozinho e
+   pode ser fechado no clique. Nunca no meio da tela: o operador
+   costuma disparar várias ações seguidas.
+   ============================================================ */
+.canto {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.canto__i {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  max-width: 420px;
+  padding: 0.9rem 1rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--tx-2);
+  background: var(--bg-elev);
+  border: 1px solid var(--line-hard);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+  animation: canto-entra 0.28s var(--e-out);
+}
+
+.canto__i b {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--tx);
+}
+
+.canto__i--ok    { border-left-color: #4ADE80; }
+.canto__i--aviso { border-left-color: #FBBF24; }
+.canto__i--erro  { border-left-color: #F87171; }
+
+.canto__x {
+  flex: none;
+  margin-left: 0.2rem;
+  color: var(--tx-4);
+}
+
+.canto__x:hover {
+  color: var(--tx);
+}
+
+.canto__x svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+@keyframes canto-entra {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (max-width: 620px) {
+  .canto {
+    left: 1rem;
+    right: 1rem;
+    align-items: stretch;
+  }
+
+  .canto__i {
+    max-width: none;
+  }
+
+  .mod {
+    padding: 0.7rem;
+  }
+
+  .mod__hd {
+    padding: 1rem;
+  }
+
+  .mod__bd {
+    padding: 1rem;
+  }
+
+  .mod__ft {
+    padding: 0.85rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .mod__ft .bt {
+    flex: 1 1 auto;
+  }
+}
+
+/* ---------- Movimento reduzido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .rail,
+  .sis__main,
+  .veu,
+  .mod,
+  .mod__cx {
+    transition: none;
+  }
+
+  .canto__i {
+    animation: none;
+  }
+}

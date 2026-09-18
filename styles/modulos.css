@@ -1,0 +1,3247 @@
+/* ============================================================
+   LOK CAR — SISTEMA · modulos.css
+   ------------------------------------------------------------
+   O estilo de cada tela. `base.css` traz os primitivos (botão,
+   crachá, campo, tabela) e `shell.css` traz a casca (trilho,
+   topo, modal). Aqui fica o que é específico de cada módulo.
+
+   A ORDEM DAS SEÇÕES É A ORDEM DO MENU, de propósito: quem
+   procura o estilo do calendário desce até "Calendário". Um
+   arquivo de 60 KB sem mapa vira bagunça na segunda semana.
+
+   DUAS REGRAS QUE VALEM PARA O ARQUIVO INTEIRO:
+
+   1) NENHUMA COR NOVA. Tudo sai dos tokens de `base.css`. O
+      vermelho Lokcar aparece só onde há decisão a tomar: ação
+      principal, item selecionado, alerta real. Um sistema onde
+      tudo é vermelho não tem hierarquia — e é assim que um
+      painel começa a parecer template.
+
+   2) DENSIDADE DE APLICATIVO. Alturas de linha menores que as
+      do site, respiro controlado, números em fonte tabular.
+      Uma tabela de 14 reservas precisa caber sem rolagem.
+   ============================================================ */
+
+/* ============================================================
+   0 · ÁTOMOS QUE FALTAM NA BASE
+   ============================================================ */
+
+/* A CAIXA DE TELA QUE O ROTEADOR CRIA A CADA DESENHO.
+   ------------------------------------------------------------
+   O roteador não desenha a tela direto no `#pgInner`: ele cria um
+   `div` novo, desenha dentro dele e o instala. É esse div que
+   carrega o ouvinte de clique da tela — e é por isso que ele
+   morre junto com ela.
+
+   Ela não pode introduzir UMA mudança visual sequer, senão cada
+   tela do sistema se desloca. Por isso: herda a largura, o
+   alinhamento e o tamanho de fonte do que houver acima (o
+   `#pgInner` já centraliza e limita a largura), e não cria
+   contexto de formatação para não atrapalhar margens que
+   colapsam entre irmãos. */
+.pg__tela {
+  display: contents;
+}
+
+/* Na barra de impressão, `display: contents` já resolve: nenhuma
+   margem própria é criada para atrapalhar a paginação. */
+@media print {
+  .pg__tela {
+    display: contents;
+  }
+}
+
+/* Texto de dado que existe como campo, mas cujo valor ainda não
+   foi definido. É o "NÃO CONFIGURADO" do pedido, no meio de uma
+   frase. Fica em itálico âmbar para não se confundir com um
+   valor real nem com um erro. */
+.falta {
+  font-style: italic;
+  color: #B98A2E;
+  font-size: 0.94em;
+}
+
+/* Contador / código em fonte monoespaçada. Reserva, placa, CNPJ
+   e código de contrato são lidos por comparação caractere a
+   caractere; monoespaçada é o que torna isso rápido. */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  letter-spacing: 0.01em;
+  color: var(--tx-2);
+}
+
+.canto__ico {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.canto__i--ok    .canto__ico { stroke: #4ADE80; }
+.canto__i--aviso .canto__ico { stroke: #FBBF24; }
+.canto__i--erro  .canto__ico { stroke: #F87171; }
+
+.vazio__ico {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 0.75rem;
+  fill: none;
+  stroke: var(--tx-4);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pend__ico {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  margin-top: 0.15rem;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pend__i {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.mcard__bar--acc > i { background: var(--accent); }
+
+/* Valor principal de um bloco de detalhe — a proteção contratada,
+   o modo de retirada. É o que o operador lê em uma passada de
+   olho antes de descer para a ficha. */
+.bloco__destaque {
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--tx);
+  margin-bottom: 0.7rem;
+}
+
+/* Lista de itens inclusos (detalhes da proteção). O marcador é
+   desenhado em CSS para não depender de glifo de fonte. */
+.lista-check {
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.lista-check li {
+  position: relative;
+  padding-left: 1.15rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--tx-3);
+}
+
+.lista-check li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.42em;
+  width: 6px;
+  height: 3px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* Lista de atalhos da tela de módulo inexistente. */
+.atalhos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.85rem;
+}
+
+.atalho {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.05rem 1.1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+}
+
+.atalho:hover {
+  border-color: var(--line-hard);
+  background: var(--bg-elev);
+  transform: translateY(-1px);
+}
+
+.atalho__ico {
+  width: 19px;
+  height: 19px;
+  margin-bottom: 0.35rem;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.atalho b {
+  font-family: var(--f-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.atalho span {
+  font-size: 0.76rem;
+  color: var(--tx-3);
+  line-height: 1.45;
+}
+
+/* Perfil no modal de sessão. */
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-bottom: 1.1rem;
+  margin-bottom: 1.1rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.perfil__avatar {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.perfil__nome {
+  font-family: var(--f-display);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.perfil__cargo {
+  font-size: 0.78rem;
+  color: var(--tx-3);
+}
+
+/* Lista de rótulo/valor em coluna. Usada em todo lugar onde há
+   "ficha": dados do cliente, do veículo, da locação, do
+   lançamento. Um só estilo para todas mantém a leitura igual. */
+.ficha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.ficha > div {
+  display: grid;
+  grid-template-columns: minmax(120px, 34%) minmax(0, 1fr);
+  gap: 0.9rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.ficha > div:last-child {
+  border-bottom: none;
+}
+
+.ficha dt {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--tx-3);
+}
+
+.ficha dd {
+  font-size: 0.84rem;
+  color: var(--tx);
+  word-break: break-word;
+}
+
+/* ============================================================
+   1 · DASHBOARD
+   ============================================================ */
+
+/* O painel usa uma grade própria: os seis indicadores em cima,
+   e abaixo duas colunas — a agenda do dia à esquerda e o que
+   exige decisão à direita. A coluna da direita é mais estreita
+   porque item de pendência é curto e a agenda tem hora, carro e
+   cliente na mesma linha. */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+  margin-bottom: var(--gap);
+}
+
+@media (min-width: 1500px) {
+  .kpis {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .kpis,
+  .kpis--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .kpis,
+  .kpis--4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Variante de quatro colunas do painel. Existe porque a tela
+   FINANCEIRO tem quatro números, e não seis: com três colunas
+   sobraria um buraco na segunda linha. Vale a mesma cascata
+   responsiva de `.kpis`, declarada logo acima. */
+.kpis--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Valor em vermelho dentro de um `.kpi`. Existe só para o
+   "Atrasado" — é o único número do painel que pede leitura
+   imediata. Os tons de badge não servem aqui: eles vêm com
+   fundo e borda, e um número grande dentro de um retângulo
+   vermelho grita mais do que informa. */
+.kpi__val--bad {
+  color: #F87171;
+}
+
+/* Cartão de indicador do painel. É o mesmo `.mcard` da base; o
+   que muda aqui é que ele carrega uma linha de contexto (o
+   "porquê" do número) e, quando faz sentido, um link de saída. */
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.05rem 1.05rem 1.35rem;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+
+.kpi:hover {
+  border-color: var(--line-hard);
+  background: var(--bg-elev);
+}
+
+.kpi__key {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+
+.kpi__ico {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kpi__val {
+  font-family: var(--f-display);
+  font-size: clamp(1.6rem, 2.3vw, 2.05rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi__val small {
+  font-size: 0.46em;
+  font-weight: 600;
+  color: var(--tx-3);
+  letter-spacing: 0;
+  margin-right: 0.1em;
+}
+
+.kpi__nota {
+  font-size: 0.71rem;
+  color: var(--tx-3);
+  line-height: 1.4;
+}
+
+.kpi__nota b {
+  color: var(--tx-2);
+  font-weight: 600;
+}
+
+.kpi__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--line-soft);
+}
+
+.kpi__bar > i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--t-med);
+}
+
+.kpi__bar--ok > i   { background: #4ADE80; }
+.kpi__bar--go > i   { background: #60A5FA; }
+.kpi__bar--warn > i { background: #FBBF24; }
+.kpi__bar--bad > i  { background: #F87171; }
+.kpi__bar--idle > i { background: var(--tx-4); }
+
+/* Contadores dentro de um bloco (o histórico do cliente, o resumo
+   de uma locação). São números de apoio: existem para dar escala
+   ao que vem abaixo, não para competir com os indicadores do
+   painel. Por isso perdem o preenchimento de cartão e o `gap`
+   largo, e ficam em três colunas fixas em vez das seis do painel —
+   dentro de um bloco, seis colunas viram uma tira ilegível. */
+.kpis--mini {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 0;
+}
+
+.kpis--mini .kpi {
+  padding: 0.7rem 0.85rem;
+  gap: 0.15rem;
+  background: var(--bg-chip);
+  border-color: var(--line-soft);
+}
+
+.kpis--mini .kpi__val {
+  font-size: 1.05rem;
+}
+
+@media (min-width: 1500px) {
+  .kpis--mini { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 420px) {
+  .kpis--mini { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* --- Estrutura de duas colunas do painel ------------------------
+   A agenda à esquerda, o que exige decisão à direita. A coluna
+   da direita é fixa em 340px porque item de pendência é curto e
+   não ganha nada em esticar; a agenda tem hora, carro e cliente
+   na mesma linha e precisa da largura. */
+.duas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: var(--gap);
+  align-items: start;
+}
+
+@media (max-width: 1180px) {
+  .duas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Coluna de cartões empilhados com o vão padrão. */
+.pilha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-width: 0;
+}
+
+/* Lista de movimentação recente. O container existe para o
+   `:last-child` das linhas funcionar sem que a última perca a
+   borda quando a lista é filtrada. */
+.mov-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Agenda do dia e próximos dias ------------------------------ */
+.dia {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.75rem 1.25rem 0.5rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.dia__t {
+  font-family: var(--f-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--tx-2);
+}
+
+.dia__n {
+  font-size: 0.7rem;
+  color: var(--tx-4);
+}
+
+.dia__dir {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--tx-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Linha de compromisso: hora, carro, cliente e status. */
+.ag {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1.25fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 1.25rem;
+  border-bottom: 1px solid var(--line-soft);
+  transition: background var(--t-fast);
+  position: relative;
+}
+
+.ag:last-child {
+  border-bottom: none;
+}
+
+.ag:hover {
+  background: var(--bg-row-hover);
+}
+
+.ag::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: transparent;
+  transition: background var(--t-fast);
+}
+
+.ag:hover::before {
+  background: var(--accent);
+}
+
+.ag__hora {
+  font-family: var(--f-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.ag__hora small {
+  display: block;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-4);
+  margin-top: 0.1rem;
+}
+
+.ag__alvo {
+  min-width: 0;
+}
+
+.ag__carro {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ag__placa {
+  font-size: 0.68rem;
+  color: var(--tx-4);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.03em;
+}
+
+.ag__cliente {
+  min-width: 0;
+  font-size: 0.8rem;
+  color: var(--tx-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ag__cliente span {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--tx-4);
+}
+
+@media (max-width: 900px) {
+  .ag {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+  }
+
+  .ag__cliente {
+    display: none;
+  }
+}
+
+/* --- Status da frota -------------------------------------------- */
+/* Barra segmentada: cada segmento é uma situação da frota. É o
+   jeito mais direto de responder "como está a frota agora" sem
+   seis números espalhados. */
+.frota-barra {
+  display: flex;
+  height: 9px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--bg-deep);
+  margin-bottom: 0.95rem;
+}
+
+.frota-barra > i {
+  display: block;
+  height: 100%;
+  transition: width var(--t-med);
+}
+
+.frota-barra__i--disponivel   { background: #4ADE80; }
+.frota-barra__i--reservado    { background: #60A5FA; }
+.frota-barra__i--locado       { background: var(--accent); }
+.frota-barra__i--manutencao   { background: #FBBF24; }
+.frota-barra__i--indisponivel { background: var(--tx-4); }
+
+.legenda {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+}
+
+.legenda__i {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+  color: var(--tx-2);
+}
+
+.legenda__p {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.legenda__p--disponivel   { background: #4ADE80; }
+.legenda__p--reservado    { background: #60A5FA; }
+.legenda__p--locado       { background: var(--accent); }
+.legenda__p--manutencao   { background: #FBBF24; }
+.legenda__p--indisponivel { background: var(--tx-4); }
+
+.legenda__n {
+  margin-left: auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--tx);
+}
+
+/* --- Pendências: saída e vazio ---------------------------------- */
+/* "Ver as outras N pendências". É um link de saída no pé da
+   lista: sem ele, o painel mostraria sete itens e esconderia que
+   existem mais quinze. */
+.pend__mais {
+  padding: 0.75rem 1.3rem;
+  border-top: 1px solid var(--line-soft);
+  background: var(--bg-alt);
+  font-size: 0.75rem;
+}
+
+.pend__mais a {
+  color: var(--tx-2);
+  font-weight: 600;
+  transition: color var(--t-fast);
+}
+
+.pend__mais a:hover {
+  color: var(--accent-hover);
+}
+
+/* O vazio das pendências leva um ícone de certo, e não a caixa
+   vazia padrão: "nada pendente" é boa notícia, não falha de
+   carregamento — e a diferença entre as duas precisa ser visível
+   de relance. */
+.pend__zero svg {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto 0.7rem;
+  fill: none;
+  stroke: #4ADE80;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pend__zero b {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--tx-2);
+}
+
+.pend__zero span {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--tx-3);
+}
+
+/* --- Movimentação recente --------------------------------------- */
+.mov {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 0.79rem;
+  transition: background var(--t-fast);
+}
+
+.mov:last-child { border-bottom: none; }
+.mov:hover { background: var(--bg-row-hover); }
+
+.mov__q {
+  font-family: var(--f-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.mov__t {
+  min-width: 0;
+}
+
+.mov__t b {
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mov__t span {
+  font-size: 0.7rem;
+  color: var(--tx-4);
+}
+
+/* ============================================================
+   2 · RESERVAS
+   ============================================================ */
+
+/* Barra de filtros: abas de status à esquerda, busca à direita.
+   Ela gruda no topo ao rolar uma lista longa — em uma locadora a
+   lista de reservas do mês passa de cem linhas. */
+.filtros {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.filtros__dir {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.filtros__n {
+  font-size: 0.74rem;
+  color: var(--tx-3);
+  white-space: nowrap;
+}
+
+.filtros__n b {
+  color: var(--tx);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Controle segmentado. É um `<select>` que virou botões: em
+   formulário de duas ou três opções, ver as alternativas todas
+   evita abrir uma lista para descobrir o que existe do outro
+   lado — e é o mesmo padrão que o site público usa no resumo da
+   reserva, então o operador reconhece a forma. */
+.opcoes {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-field);
+}
+
+.opcoes__b {
+  padding: 0.42rem 0.85rem;
+  border-radius: calc(var(--r-sm) - 2px);
+  color: var(--tx-3);
+  font-size: 0.74rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color var(--t-fast), color var(--t-fast);
+}
+
+.opcoes__b:hover {
+  color: var(--tx);
+}
+
+.opcoes__b[aria-pressed='true'] {
+  background: var(--bg-elev);
+  color: var(--tx);
+  box-shadow: inset 0 0 0 1px var(--line-hard);
+}
+
+/* Estado de carregamento da lista. Não é enfeite: a tabela é
+   redesenhada a cada digitação na busca, e sem um retorno visual
+   instantâneo o operador acha que a tecla não pegou. */
+.vazio--busca .vazio__ico {
+  stroke: var(--tx-4);
+}
+
+@media (max-width: 780px) {
+  .filtros {
+    align-items: stretch;
+  }
+
+  .filtros .tabs {
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .filtros__dir {
+    justify-content: space-between;
+  }
+}
+
+/* ============================================================
+   3 · DETALHE DE REGISTRO (reserva, cliente, locação, contrato,
+   lançamento, vistoria, manutenção, ocorrência, veículo)
+   ------------------------------------------------------------
+   Todas as telas de detalhe compartilham esta estrutura:
+   um cabeçalho com voltar + código + crachá de status, uma
+   grade de blocos e, quando há, um rodapé de ações.
+   ============================================================ */
+.reg {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.35rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.reg__voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 0.75rem 0 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-field);
+  color: var(--tx-2);
+  font-size: 0.74rem;
+  font-weight: 600;
+  transition: border-color var(--t-fast), color var(--t-fast), background var(--t-fast);
+}
+
+.reg__voltar:hover {
+  border-color: var(--line-hard);
+  background: var(--bg-elev);
+  color: var(--tx);
+}
+
+.reg__voltar svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.reg__id {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.reg__cod {
+  font-family: var(--f-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.reg__quando {
+  font-size: 0.74rem;
+  color: var(--tx-4);
+}
+
+.reg__acoes {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 780px) {
+  .reg__acoes {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Grade de blocos do detalhe. Auto-fill para não haver uma
+   media query por tela. */
+.blocos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--gap);
+  align-items: start;
+}
+
+.bloco {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.bloco--largo {
+  grid-column: 1 / -1;
+}
+
+.bloco__h {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.05rem;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--line);
+}
+
+.bloco__h h2 {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-2);
+}
+
+.bloco__h svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bloco__n {
+  margin-left: auto;
+  font-size: 0.68rem;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.bloco__b {
+  padding: 0.9rem 1.05rem;
+}
+
+.bloco__b--seco {
+  padding: 0;
+}
+
+/* --- Financeiro da reserva ------------------------------------- */
+/* Cada linha da conta. A última linha é o total e por isso tem
+   peso e cor diferentes: é ela que o cliente confere. */
+.conta {
+  padding: 0.35rem 1.05rem 0.9rem;
+}
+
+.conta__l {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.42rem 0;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.conta__l:last-child {
+  border-bottom: none;
+}
+
+.conta__l span:first-child {
+  color: var(--tx-2);
+}
+
+.conta__l span:last-child {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.conta__l--desconto span:last-child {
+  color: #4ADE80;
+}
+
+.conta__l--total {
+  margin-top: 0.3rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line-hard);
+  border-bottom: none;
+  font-size: 0.94rem;
+}
+
+.conta__l--total span:first-child {
+  font-family: var(--f-display);
+  font-weight: 700;
+  color: var(--tx);
+  letter-spacing: 0.02em;
+}
+
+.conta__l--total span:last-child {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.18rem;
+  color: var(--tx);
+}
+
+.conta__aviso {
+  margin: 0.6rem 1.05rem 0.2rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--r-sm);
+  background: rgba(185, 138, 46, 0.08);
+  border: 1px solid rgba(185, 138, 46, 0.28);
+  font-size: 0.74rem;
+  color: #D6A63F;
+  line-height: 1.45;
+}
+
+/* --- Ações contextuais (§7) ------------------------------------ */
+/* Cada ação diz por que está bloqueada, em vez de sumir. Um
+   botão morto é pior que um botão ausente: o operador clica,
+   nada acontece e ele perde a confiança no sistema inteiro. */
+.acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.acao {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  background: var(--bg-field);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+
+.acao:hover {
+  border-color: var(--line-hard);
+  background: var(--bg-elev);
+}
+
+.acao[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.acao[aria-disabled='true']:hover {
+  border-color: var(--line);
+  background: var(--bg-field);
+}
+
+.acao__ico {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--bg-chip);
+}
+
+.acao__ico svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: var(--tx-2);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.acao--pri .acao__ico {
+  background: var(--accent-a18);
+}
+
+.acao--pri .acao__ico svg {
+  stroke: var(--accent-hover);
+}
+
+.acao__t {
+  min-width: 0;
+}
+
+.acao__t b {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.acao__t span {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--tx-4);
+  line-height: 1.4;
+}
+
+.acao[aria-disabled='true'] .acao__t b {
+  color: var(--tx-3);
+}
+
+/* ============================================================
+   4 · CLIENTES
+   ============================================================ */
+.cli {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.cli__av {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--bg-chip);
+  border: 1px solid var(--line-hard);
+  font-family: var(--f-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--tx-2);
+  letter-spacing: 0.03em;
+}
+
+.cli__av--pj {
+  border-radius: var(--r-sm);
+  border-color: rgba(96, 165, 250, 0.34);
+  color: #60A5FA;
+}
+
+.cli__t {
+  min-width: 0;
+}
+
+.cli__t b {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cli__t span {
+  font-size: 0.69rem;
+  color: var(--tx-4);
+}
+
+/* Histórico do cliente: linha do tempo simples. */
+.hist {
+  display: flex;
+  flex-direction: column;
+}
+
+.hist__i {
+  display: grid;
+  grid-template-columns: 84px 22px minmax(0, 1fr);
+  gap: 0.7rem;
+  padding-bottom: 1.05rem;
+  position: relative;
+}
+
+.hist__q {
+  font-size: 0.7rem;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+  padding-top: 0.15rem;
+  text-align: right;
+}
+
+/* A linha vertical que costura os eventos. Sem ela, a lista
+   vira uma pilha de linhas soltas e perde a leitura de tempo. */
+.hist__m {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.hist__m::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: -1.05rem;
+  width: 1px;
+  background: var(--line);
+}
+
+.hist__i:last-child .hist__m::before {
+  display: none;
+}
+
+.hist__p {
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--tx-4);
+  z-index: 1;
+}
+
+.hist__p--reserva { border-color: #60A5FA; }
+.hist__p--locacao { border-color: var(--accent); }
+
+.hist__t {
+  min-width: 0;
+  font-size: 0.8rem;
+}
+
+.hist__t b {
+  display: block;
+  font-weight: 600;
+}
+
+.hist__t span {
+  font-size: 0.71rem;
+  color: var(--tx-4);
+}
+
+/* ============================================================
+   5 · LOCAÇÕES
+   ============================================================ */
+/* O medidor de atraso. Só aparece quando há atraso, e insiste
+   na informação: uma locação atrasada é dinheiro parado fora da
+   locadora. */
+.atraso {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(248, 113, 113, 0.10);
+  border: 1px solid rgba(248, 113, 113, 0.32);
+  color: #F87171;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.atraso svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+/* Quilometragem: saída → entrada, com a diferença rodada. */
+.km {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+}
+
+.km__seta {
+  color: var(--tx-4);
+}
+
+.km__dif {
+  padding: 0.1rem 0.42rem;
+  border-radius: 999px;
+  background: var(--bg-chip);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--tx-2);
+}
+
+/* ============================================================
+   6 · FROTA
+   ============================================================ */
+/* Cartão de veículo: foto, identificação e situação. A foto é a
+   mesma do site — é o mesmo carro, não uma imagem nova. */
+.vcl {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  transition: border-color var(--t-fast), transform var(--t-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+.vcl:hover {
+  border-color: var(--line-hard);
+  transform: translateY(-2px);
+}
+
+.vcl__midia {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-deep);
+  overflow: hidden;
+}
+
+.vcl__midia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--t-med);
+}
+
+.vcl:hover .vcl__midia img {
+  transform: scale(1.03);
+}
+
+.vcl__placa {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(8, 10, 14, 0.82);
+  border: 1px solid var(--line-hard);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(4px);
+}
+
+.vcl__st {
+  position: absolute;
+  right: 0.6rem;
+  top: 0.6rem;
+}
+
+.vcl__b {
+  padding: 0.85rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.vcl__t {
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.vcl__sub {
+  font-size: 0.72rem;
+  color: var(--tx-3);
+}
+
+.vcl__rodape {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.vcl__diaria {
+  font-family: var(--f-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.vcl__diaria small {
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--tx-4);
+}
+
+.vcl__km {
+  font-size: 0.7rem;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.grade-vcl {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(262px, 1fr));
+  gap: var(--gap);
+}
+
+/* Ficha do veículo no detalhe: foto à esquerda, dados à direita. */
+.vcl-ficha {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .vcl-ficha {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.vcl-foto {
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+
+.vcl-foto img {
+  width: 100%;
+}
+
+/* ============================================================
+   7 · CALENDÁRIO DA FROTA
+   ------------------------------------------------------------
+   Uma linha por veículo, as barras de reserva e locação sobre
+   uma grade de dias. O cabeçalho de dias gruda no topo ao rolar,
+   porque em 11 veículos a lista passa da tela.
+   ============================================================ */
+.cal {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.cal__rolagem {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.cal__grade {
+  min-width: 1040px;
+}
+
+.cal__hd {
+  display: grid;
+  align-items: stretch;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.cal__hd-vazio {
+  border-right: 1px solid var(--line);
+}
+
+.cal__d {
+  padding: 0.45rem 0.25rem 0.4rem;
+  text-align: center;
+  border-left: 1px solid var(--line-soft);
+  font-size: 0.68rem;
+  line-height: 1.25;
+  color: var(--tx-3);
+}
+
+.cal__d b {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--tx-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal__d--fds {
+  background: rgba(255, 255, 255, 0.014);
+}
+
+.cal__d--hoje {
+  background: var(--accent-a14);
+}
+
+.cal__d--hoje b {
+  color: var(--accent-hover);
+}
+
+.cal__linha {
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid var(--line-soft);
+  position: relative;
+}
+
+.cal__linha:last-child {
+  border-bottom: none;
+}
+
+.cal__linha:hover {
+  background: var(--bg-row-hover);
+}
+
+.cal__nome {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-right: 1px solid var(--line);
+  min-width: 0;
+  background: var(--bg-alt);
+  align-self: stretch;
+}
+
+.cal__nome b {
+  display: block;
+  font-size: 0.79rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal__nome span {
+  font-size: 0.65rem;
+  color: var(--tx-4);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+}
+
+/* A faixa é posicionada por grid-column calculado em JS. É o
+   jeito de desenhar um intervalo de dias sem medir pixel. */
+/* A trilha TEM as mesmas colunas do fundo. Sem esta linha, o
+   `grid-column` de cada faixa cairia em trilhas implícitas
+   dimensionadas pelo conteúdo — uma faixa de "R-0012" e outra de
+   "L-0005" teriam larguras diferentes, e as barras de uma mesma
+   linha não ficariam alinhadas com o cabeçalho de dias nem com o
+   fundo quadriculado. O `grid-column: N` só significa "o dia N"
+   porque existe uma coluna por dia para receber. */
+.cal__trilha {
+  display: grid;
+  grid-template-columns: repeat(var(--dias), minmax(0, 1fr));
+  align-self: stretch;
+  align-items: center;
+  position: relative;
+  min-height: 46px;
+}
+
+.cal__fundo {
+  display: grid;
+  grid-template-columns: repeat(var(--dias), minmax(0, 1fr));
+  align-self: stretch;
+  position: absolute;
+  inset: 0;
+}
+
+.cal__fundo > i {
+  border-left: 1px solid var(--line-soft);
+}
+
+.cal__fundo > i.cal__d--hoje {
+  background: var(--accent-a08);
+}
+
+.cal__fundo > i.cal__d--fds {
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.cal__faixa {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 24px;
+  margin: 0 1px;
+  padding: 0 0.5rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  border: 1px solid transparent;
+  transition: filter var(--t-fast);
+}
+
+.cal__faixa:hover {
+  filter: brightness(1.22);
+}
+
+.cal__faixa--reserva-nova       { background: var(--accent-a18); color: var(--accent-hover); border-color: var(--accent-a30); }
+.cal__faixa--reserva-aguardando { background: rgba(251, 191, 36, 0.14); color: #FBBF24; border-color: rgba(251, 191, 36, 0.30); }
+.cal__faixa--reserva-confirmada { background: rgba(96, 165, 250, 0.14); color: #60A5FA; border-color: rgba(96, 165, 250, 0.30); }
+.cal__faixa--reserva-contrato   { background: rgba(251, 191, 36, 0.14); color: #FBBF24; border-color: rgba(251, 191, 36, 0.30); }
+.cal__faixa--reserva-pronta     { background: rgba(74, 222, 128, 0.14); color: #4ADE80; border-color: rgba(74, 222, 128, 0.30); }
+.cal__faixa--reserva-andamento  { background: rgba(74, 222, 128, 0.16); color: #4ADE80; border-color: rgba(74, 222, 128, 0.34); }
+
+.cal__faixa--locacao-andamento  { background: var(--accent-a18); color: var(--accent-hover); border-color: var(--accent-a55); }
+.cal__faixa--locacao-devolucao  { background: rgba(251, 191, 36, 0.16); color: #FBBF24; border-color: rgba(251, 191, 36, 0.36); }
+.cal__faixa--locacao-atrasada   { background: rgba(248, 113, 113, 0.18); color: #F87171; border-color: rgba(248, 113, 113, 0.40); }
+.cal__faixa--locacao-aguardando { background: rgba(96, 165, 250, 0.14); color: #60A5FA; border-color: rgba(96, 165, 250, 0.30); }
+
+.cal__faixa--manutencao {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(251, 191, 36, 0.16),
+    rgba(251, 191, 36, 0.16) 5px,
+    rgba(251, 191, 36, 0.05) 5px,
+    rgba(251, 191, 36, 0.05) 10px
+  );
+  color: #FBBF24;
+  border-color: rgba(251, 191, 36, 0.30);
+}
+
+.cal__faixa-t {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal__legenda {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.05rem;
+  border-top: 1px solid var(--line);
+  background: var(--bg-alt);
+  font-size: 0.71rem;
+  color: var(--tx-3);
+}
+
+.cal__legenda i {
+  display: inline-block;
+  width: 16px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+
+.cal__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cal__nav b {
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--tx-2);
+  min-width: 132px;
+  text-align: center;
+}
+
+/* ============================================================
+   8 · CONTRATOS
+   ============================================================ */
+/* Pré-visualização: papel claro sobre interface escura.
+   O contrato é o único objeto do sistema que sai da tela — ele
+   é impresso e assinado. Mostrá-lo no mesmo escuro do resto
+   daria uma leitura ruim e uma ideia errada do resultado. */
+.doc {
+  background: #F4F5F7;
+  color: #14171E;
+  border-radius: var(--r-sm);
+  padding: 2.2rem 2.4rem;
+  font-family: var(--f-sans);
+  font-size: 0.8rem;
+  line-height: 1.62;
+  max-height: 62vh;
+  overflow-y: auto;
+}
+
+.doc::-webkit-scrollbar-track {
+  background: #E2E4E9;
+}
+
+.doc::-webkit-scrollbar-thumb {
+  background: #B9BEC9;
+  border-color: #E2E4E9;
+}
+
+.doc__modelo {
+  display: block;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1.6rem;
+  border: 1px solid #C9A227;
+  border-left-width: 3px;
+  background: #FDF8E7;
+  color: #7A5F0C;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+}
+
+.doc__h {
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+.doc__h h3 {
+  font-family: var(--f-display);
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #14171E;
+}
+
+.doc__h p {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  color: #5C6270;
+  font-variant-numeric: tabular-nums;
+}
+
+.doc__b {
+  margin-bottom: 1.4rem;
+  break-inside: avoid;
+}
+
+.doc__b h4 {
+  font-family: var(--f-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #14171E;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.55rem;
+  border-bottom: 1px solid #D8DBE2;
+}
+
+.doc dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.doc dl > div {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 0.9rem;
+  padding: 0.24rem 0;
+}
+
+.doc dt {
+  font-size: 0.72rem;
+  color: #5C6270;
+}
+
+.doc dd {
+  font-size: 0.76rem;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.doc__cl {
+  margin-bottom: 1.05rem;
+  break-inside: avoid;
+}
+
+.doc__cl h4 {
+  font-family: var(--f-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #14171E;
+  margin-bottom: 0.32rem;
+}
+
+.doc__cl p {
+  font-size: 0.755rem;
+  text-align: justify;
+  color: #262A34;
+}
+
+.doc__cl p + p {
+  margin-top: 0.4rem;
+}
+
+/* O realce do dado que falta. Âmbar, jamais vermelho: falta de
+   configuração não é erro do operador, e pintar de vermelho um
+   contrato inteiro faria a tela parecer quebrada. */
+.doc__falta {
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  background: #FDF3D4;
+  border-bottom: 1px dashed #C9A227;
+  color: #7A5F0C;
+  font-style: italic;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.doc__ass {
+  margin-top: 2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid #D8DBE2;
+}
+
+.doc__ass-local {
+  font-size: 0.75rem;
+  color: #5C6270;
+  margin-bottom: 1.6rem;
+}
+
+.doc__ass-par {
+  margin-bottom: 1.7rem;
+}
+
+.doc__ass-linha {
+  height: 1px;
+  background: #9AA1AE;
+  margin-bottom: 0.4rem;
+}
+
+.doc__ass-par b {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #14171E;
+}
+
+.doc__ass-par span {
+  font-size: 0.72rem;
+  color: #5C6270;
+}
+
+.doc__nota {
+  margin-top: 1.4rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #D8DBE2;
+  font-size: 0.68rem;
+  color: #7A5F0C;
+  line-height: 1.5;
+}
+
+.doc__pe {
+  margin-top: 1.1rem;
+  text-align: center;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #7A5F0C;
+}
+
+@media (max-width: 720px) {
+  .doc {
+    padding: 1.3rem 1.1rem;
+    max-height: 58vh;
+  }
+
+  .doc dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.05rem;
+  }
+}
+
+/* Lista de pendências do contrato, no topo da prévia. */
+.penddoc {
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--r-sm);
+  background: rgba(185, 138, 46, 0.07);
+  border: 1px solid rgba(185, 138, 46, 0.26);
+}
+
+.penddoc__t {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #D6A63F;
+  margin-bottom: 0.5rem;
+}
+
+.penddoc__t svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.penddoc ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.3rem 1.1rem;
+}
+
+.penddoc li {
+  font-size: 0.73rem;
+  color: var(--tx-2);
+  line-height: 1.4;
+}
+
+.penddoc li b {
+  color: var(--tx);
+  font-weight: 600;
+}
+
+/* ============================================================
+   9 · FINANCEIRO
+   ============================================================ */
+.fin__tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  color: var(--tx-2);
+}
+
+.fin__tipo i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.fin__tipo--receita i { background: #4ADE80; }
+.fin__tipo--caucao  i { background: #60A5FA; }
+.fin__tipo--despesa i { background: #F87171; }
+
+.fin__resumo {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--line);
+  background: var(--bg-alt);
+  font-size: 0.76rem;
+  color: var(--tx-3);
+}
+
+.fin__resumo b {
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   10 · VISTORIAS
+   ------------------------------------------------------------
+   A vistoria é a prova do estado do veículo. A grade de áreas
+   mostra, de relance, o que já foi conferido e o que não foi —
+   por isso o estado vazio precisa ser evidente.
+   ============================================================ */
+.areas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+  gap: 0.85rem;
+}
+
+.area {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-field);
+  overflow: hidden;
+}
+
+.area--tocada {
+  border-color: rgba(251, 191, 36, 0.34);
+}
+
+.area__h {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-row);
+  border-bottom: 1px solid var(--line);
+}
+
+.area__h b {
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.area__b {
+  padding: 0.65rem 0.75rem 0.75rem;
+}
+
+/* A observação escrita de uma área. É o dado que a vistoria
+   realmente guarda nesta fase, então ela não é texto de apoio:
+   tem o tamanho e a cor de conteúdo. */
+.area__obs {
+  font-size: 0.78rem;
+  color: var(--tx-2);
+  line-height: 1.5;
+}
+
+/* As duas pontas da mesma locação, lado a lado: a vistoria de
+   saída e a de devolução. A comparação é o que responde "o que
+   aconteceu com o carro nesse período?", então as duas colunas
+   precisam ter o MESMO peso — um lado maior que o outro faria
+   uma das vistorias parecer mais importante. */
+.par {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.par__lado {
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-field);
+}
+
+.par__h {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  margin-bottom: 0.45rem;
+}
+
+@media (max-width: 620px) {
+  .par {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Vagas de foto. Elas NÃO fingem ter foto: mostram a marca de
+   que o anexo depende do backend. Um retângulo cinza com um
+   ícone de imagem seria lido como "foto não carregou" e o
+   operador ficaria esperando. */
+.fotos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+
+.foto {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line-hard);
+  border-radius: var(--r-sm);
+  background: var(--bg-deep);
+  color: var(--tx-4);
+  transition: border-color var(--t-fast), color var(--t-fast);
+}
+
+.foto:hover {
+  border-color: var(--tx-4);
+  color: var(--tx-3);
+}
+
+.foto svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.foto__n {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  font-size: 0.54rem;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   11 · MANUTENÇÕES
+   ============================================================ */
+.man {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--line-soft);
+  transition: background var(--t-fast);
+  position: relative;
+}
+
+.man:last-child { border-bottom: none; }
+.man:hover { background: var(--bg-row-hover); }
+
+.man__alerta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 4px;
+  background: rgba(251, 191, 36, 0.10);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  color: #FBBF24;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.man--documentacao .man__alerta {
+  background: rgba(248, 113, 113, 0.10);
+  border-color: rgba(248, 113, 113, 0.30);
+  color: #F87171;
+}
+
+.man__t { min-width: 0; }
+
+.man__t b {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.man__t span {
+  font-size: 0.71rem;
+  color: var(--tx-4);
+}
+
+@media (max-width: 780px) {
+  .man {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .man__alerta {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+/* ============================================================
+   12 · OCORRÊNCIAS
+   ============================================================ */
+.oco {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--line-soft);
+  transition: background var(--t-fast);
+}
+
+.oco:last-child { border-bottom: none; }
+.oco:hover { background: var(--bg-row-hover); }
+
+.oco__h {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.oco__h b {
+  font-family: var(--f-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.oco__quando {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.oco__desc {
+  font-size: 0.81rem;
+  color: var(--tx-2);
+  line-height: 1.55;
+  max-width: 78ch;
+}
+
+.oco__meta {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+  margin-top: 0.65rem;
+  font-size: 0.72rem;
+  color: var(--tx-4);
+}
+
+.oco__meta span b {
+  color: var(--tx-2);
+  font-weight: 600;
+}
+
+/* ============================================================
+   13 · DOCUMENTOS
+   ============================================================ */
+.doc-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-i {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 130px 120px;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--line-soft);
+  transition: background var(--t-fast);
+}
+
+.doc-i:last-child { border-bottom: none; }
+.doc-i:hover { background: var(--bg-row-hover); }
+
+.doc-i__ico {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  background: var(--bg-chip);
+}
+
+.doc-i__ico svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--tx-3);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.doc-i__t { min-width: 0; }
+
+.doc-i__t b {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-i__t span {
+  font-size: 0.7rem;
+  color: var(--tx-4);
+}
+
+@media (max-width: 780px) {
+  .doc-i {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .doc-i__st,
+  .doc-i__vence {
+    display: none;
+  }
+}
+
+/* ============================================================
+   14 · NOTIFICAÇÕES
+   ------------------------------------------------------------
+   A linha da tela de notificações é o MESMO item de pendência
+   que o sino do topo e o cartão do painel usam. Em vez de
+   desenhar a linha de novo, esta seção embrulha o item: `.nt`
+   zera o preenchimento e a borda que `.pend__i` já traz, e
+   acrescenta o único botão a mais que a tela tem — "Vista",
+   que marca a leitura sem resolver a pendência.
+   ============================================================ */
+.nt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 0.9rem;
+}
+
+.nt:last-child .pend__i { border-bottom: none; }
+
+.nt--lida .pend__i { opacity: 0.55; }
+.nt--lida:hover .pend__i { opacity: 0.8; }
+
+/* O botão de leitura. Discreto de propósito: ele NÃO resolve a
+   pendência, e um botão com peso visual de ação principal
+   ensinaria o operador a clicar nele para "limpar a tela" — que
+   é exatamente o que esta tela não pode deixar acontecer. */
+.nt__acoes {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+
+.nt__ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 28px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-field);
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: var(--tx-2);
+  white-space: nowrap;
+  transition: border-color var(--t-fast), color var(--t-fast);
+}
+
+.nt__ir:hover {
+  border-color: var(--accent-a55);
+  color: var(--accent-hover);
+}
+
+.nt__ir svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Agrupamento por tipo de pendência. */
+.nt-grupo {
+  margin-bottom: var(--gap);
+}
+
+.nt-grupo__h {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.25rem 0.6rem;
+}
+
+.nt-grupo__h h2 {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+
+.nt-grupo__n {
+  display: grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--bg-chip);
+  border: 1px solid var(--line-hard);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--tx-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   15 · CONFIGURAÇÕES
+   ------------------------------------------------------------
+   Tela dividida: formulário à esquerda, situação à direita. O
+   painel da direita é o que dá sentido à tela — ele diz quanto
+   do contrato ainda está travado por falta de dado. Sem ele, o
+   formulário seria uma lista de campos sem propósito visível.
+   ============================================================ */
+.cfg-grupo {
+  margin-bottom: 1.6rem;
+}
+
+.cfg-grupo__h {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.cfg-grupo__h h3 {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-2);
+}
+
+.cfg-obrig {
+  font-size: 0.62rem;
+  color: var(--tx-4);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cfg-obrig--falta {
+  color: #D6A63F;
+}
+
+/* Campo de regra: rótulo, controle, dica. A dica não é enfeite
+   — é o que permite ao dono da locadora preencher sozinho sem
+   consultar ninguém. */
+.regra {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.regra:last-child { border-bottom: none; }
+
+.regra__h {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.regra__h b {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.regra__dica {
+  margin-top: 0.45rem;
+  font-size: 0.73rem;
+  color: var(--tx-4);
+  line-height: 1.5;
+  max-width: 74ch;
+}
+
+@media (min-width: 640px) {
+  .regra__linha {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: center;
+  }
+}
+
+/* Contador de pendências. Um número grande, uma frase e uma
+   barra. É o resumo do quanto falta para o contrato sair. */
+.cfg-pend {
+  text-align: center;
+  padding: 1.2rem 1rem;
+}
+
+.cfg-pend__n {
+  font-family: var(--f-display);
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #D6A63F;
+  font-variant-numeric: tabular-nums;
+}
+
+.cfg-pend__n--ok {
+  color: #4ADE80;
+}
+
+.cfg-pend__t {
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--tx-2);
+  line-height: 1.5;
+}
+
+.cfg-pend__bar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--bg-deep);
+  overflow: hidden;
+  margin: 0.9rem 0 0.55rem;
+}
+
+.cfg-pend__bar > i {
+  display: block;
+  height: 100%;
+  background: #4ADE80;
+  transition: width var(--t-med);
+}
+
+/* Lista de campos que ainda faltam, com atalho para o campo. */
+.cfg-falta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.42rem 0;
+  font-size: 0.76rem;
+  color: var(--tx-2);
+  border-bottom: 1px solid var(--line-soft);
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+
+.cfg-falta:last-child { border-bottom: none; }
+
+.cfg-falta:hover {
+  color: var(--tx);
+}
+
+.cfg-falta svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  fill: none;
+  stroke: #D6A63F;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.cfg-falta span {
+  margin-left: auto;
+  font-size: 0.66rem;
+  color: var(--tx-4);
+}
+
+/* Aviso de que a gravação é local. Fica no rodapé da tela, e
+   não escondido: o operador precisa saber que aqueles dados
+   vivem no navegador dele e não no servidor. */
+.cfg-local {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--r-sm);
+  background: rgba(96, 165, 250, 0.07);
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  font-size: 0.75rem;
+  color: var(--tx-2);
+  line-height: 1.55;
+}
+
+.cfg-local svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  margin-top: 0.1rem;
+  fill: none;
+  stroke: #60A5FA;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+/* Barra que gruda no rodapé quando há alteração não salva.
+   Sem ela, o operador edita quatro campos, troca de tela e
+   perde tudo sem perceber. */
+.cfg-salvar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--r-sm);
+  background: var(--bg-elev);
+  border: 1px solid var(--line-hard);
+  box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.34);
+}
+
+.cfg-salvar p {
+  font-size: 0.78rem;
+  color: var(--tx-2);
+}
+
+.cfg-salvar__acts {
+  margin-left: auto;
+  display: flex;
+  gap: 0.55rem;
+}
+
+/* ============================================================
+   16 · CABEÇALHO DE TABELA COM FILTRO EM LINHA
+   ============================================================ */
+.abre {
+  cursor: pointer;
+}
+
+.abre:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Coluna de ações alinhada à direita, sem quebrar em duas
+   linhas em telas médias. */
+.acts {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+/* Botão de ação de linha. Menor que o `.bt` normal porque em
+   uma tabela densa o botão grande empurra a linha e destrói a
+   leitura vertical. */
+.ab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 26px;
+  padding: 0 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-field);
+  color: var(--tx-2);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: border-color var(--t-fast), color var(--t-fast), background var(--t-fast);
+}
+
+.ab:hover {
+  border-color: var(--line-hard);
+  background: var(--bg-elev);
+  color: var(--tx);
+}
+
+.ab--pri:hover {
+  border-color: var(--accent-a55);
+  color: var(--accent-hover);
+}
+
+/* Mesma regra dos outros botões: o atalho desabilitado continua
+   clicável e responde com o motivo. Sem esta linha ele parecia
+   liberado enquanto o clique era recusado — o pior dos dois
+   mundos, porque o operador acha que o sistema travou. */
+.ab[aria-disabled='true'] {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.ab[aria-disabled='true']:hover {
+  border-color: var(--line);
+  background: var(--bg-field);
+  color: var(--tx-2);
+}
+
+.ab svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Célula de duas linhas: o dado principal e um apoio menor.
+   Evita colunas novas só para o complemento. */
+.duplo b {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.duplo span {
+  display: block;
+  font-size: 0.69rem;
+  color: var(--tx-4);
+}
+
+/* ============================================================
+   17 · MOVIMENTO REDUZIDO
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .atalho,
+  .vcl,
+  .vcl__midia img,
+  .kpi,
+  .cal__faixa,
+  .foto {
+    transition: none;
+    transform: none;
+  }
+
+  .vcl:hover {
+    transform: none;
+  }
+
+  .vcl:hover .vcl__midia img {
+    transform: none;
+  }
+
+  .atalho:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   18 · IMPRESSÃO
+   ------------------------------------------------------------
+   Imprimir uma tela do sistema deve sair em papel claro, sem
+   trilho nem topo. O contrato tem o seu próprio documento; o
+   que esta regra resolve é imprimir uma lista ou uma ficha.
+   ============================================================ */
+@media print {
+  .rail,
+  .top,
+  .veu,
+  .canto,
+  .mod,
+  .pghd__acts,
+  .acts,
+  .filtros,
+  .sis__main > .top {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .sis__main {
+    margin-left: 0 !important;
+  }
+
+  .pg {
+    padding: 0;
+  }
+
+  .card,
+  .bloco,
+  .cal {
+    border-color: #C9CDD6;
+    background: #fff;
+  }
+
+  .doc {
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+  }
+}
+
+/* ============================================================
+   17 · CONFIGURAÇÕES — O QUE FALTA PARA O CONTRATO SAIR
+   ------------------------------------------------------------
+   Três peças pequenas que a tela de Configurações precisou e que
+   ainda não existiam.
+
+   O aviso de que a gravação acontece NESTE NAVEGADOR é o mais
+   importante dos três. Sem ele, alguém preenche a razão social,
+   fecha o navegador, abre noutro computador e conclui que "o
+   sistema perdeu o dado" — quando na verdade o dado nunca
+   chegou a um servidor, porque não há servidor nesta fase.
+   ============================================================ */
+.cfg-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--r-sm);
+  background: var(--accent-a08);
+  border: 1px solid var(--accent-a30);
+  font-size: 0.76rem;
+  color: var(--tx-2);
+  line-height: 1.55;
+}
+
+.cfg-aviso svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  margin-top: 0.12rem;
+  fill: none;
+  stroke: var(--accent-hover);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+/* Contador de campo já definido dentro do formulário. Fica no
+   cabeçalho do grupo porque é ali que a pergunta nasce ("quanto
+   disto já está preenchido?"). */
+.cfg-n {
+  margin-left: auto;
+  font-size: 0.68rem;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.cfg-n--ok {
+  color: #4ADE80;
+}
+
+/* O atalho que leva ao campo que falta. É um <a>, e não um
+   <button>, porque o destino é um endereço — e um endereço
+   pode ser copiado e aberto noutra aba. */
+.cfg-ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.36rem 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--accent-hover);
+  background: var(--accent-a08);
+  border: 1px solid var(--accent-a30);
+  border-radius: var(--r-sm);
+  transition: background-color var(--t-fast), color var(--t-fast);
+}
+
+.cfg-ir:hover {
+  background: var(--accent-a18);
+}
+
+/* ==========================================================
+   ALTERAÇÃO DE PERÍODO DA RESERVA (§2–§4)
+
+   Três peças: a comparação período atual × período novo, a
+   prévia do que muda no valor, e o aviso de conflito de agenda.
+   Nada aqui tem ALTURA FIXA — o texto é dado pelo conteúdo, e o
+   modal pode crescer. Card com altura travada é o que faz o
+   texto encostar na borda quando o nome do cliente é longo.
+   ========================================================== */
+
+.pcard {
+  min-width: 0;              /* sem isto, o grid estoura no mobile */
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-2);
+}
+
+/* O período novo é o que o operador está decidindo: fica
+   destacado, e o atual fica como referência. */
+.pcard--novo {
+  border-color: var(--accent-a30);
+  background: var(--accent-a14);
+}
+
+.pcard__t {
+  margin: 0 0 0.6rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+
+/* Os dois campos lado a lado dentro do card. `minmax(0, 1fr)`
+   porque `1fr` sozinho não deixa a coluna encolher abaixo do
+   conteúdo — foi assim que o campo de hora vazou para fora do
+   card em tela estreita. */
+.pcard__g {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 118px;
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.pcalc {
+  margin-top: 1rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: var(--bg-2);
+}
+
+.pcalc__t {
+  margin: 0 0 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+
+.pcalc__aviso {
+  margin: 0.7rem 0 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.pcalc__aviso--warn {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  color: var(--tx-2);
+}
+
+.pcalc__aviso--ok {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  color: var(--tx-2);
+}
+
+/* "para" entre o valor velho e o novo. Em caixa baixa e tom
+   apagado para não competir com os números. */
+.calc__seta {
+  color: var(--tx-4);
+  font-size: 0.72rem;
+  padding: 0 0.15rem;
+}
+
+.calc--mais { color: #F59E0B; }
+.calc--menos { color: #22C55E; }
+
+/* ---- conflito de agenda ----
+   `.pconf` é só o ponto de montagem: a caixa de conflito nasce
+   dentro dele quando a alteração é barrada. Enquanto não houver
+   conflito ele fica VAZIO, e um ponto de montagem vazio que
+   ocupa espaço empurra o rodapé do modal sem motivo. */
+.pconf { display: block; }
+.pconf:empty { display: none; }
+
+.pconf__cx {
+  margin-top: 0.9rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-left: 3px solid #EF4444;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.pconf__t {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #FCA5A5;
+}
+
+.pconf__s {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--tx-3);
+}
+
+.pconf__l {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* A etiqueta do tipo (Reserva/Manutenção) não pode encostar no
+   nome do compromisso nem empurrá-lo para fora do card: o texto
+   quebra em vez de vazar. */
+.pconf__i {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.pconf__n {
+  flex: 1 1 12rem;
+  min-width: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--tx-2);
+  overflow-wrap: anywhere;
+}
+
+/* ---- histórico de alterações da reserva ---- */
+.hres__i {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.hres__i:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.hres__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.hres__q {
+  font-size: 0.7rem;
+  color: var(--tx-4);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.hres__bd {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--tx-2);
+  overflow-wrap: anywhere;
+}
+
+.hres__l {
+  color: var(--tx-4);
+  font-size: 0.72rem;
+  padding: 0 0.1rem;
+}
+
+.hres__v {
+  font-weight: 600;
+  color: var(--tx-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.hres__og {
+  margin-top: 0.3rem;
+  font-size: 0.68rem;
+  color: var(--tx-4);
+  letter-spacing: 0.02em;
+}
+
+/* Em telas estreitas os campos do período empilham: lado a lado
+   o campo de data fica com menos de 90px e o valor "2026-09-21"
+   não cabe. */
+@media (max-width: 560px) {
+  .pcard__g {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ============================================================
+   PRORROGAÇÕES (§7–§12)
+   ------------------------------------------------------------
+   Nada aqui tem altura fixa. O cartão do pedido carrega nome,
+   veículo, duas datas, dias extras, valor e — quando o período
+   não cabe — uma linha de conflito. São SEIS linhas de conteúdo
+   de tamanhos diferentes, e uma altura fixa cortaria a sexta
+   justamente no caso em que ela importa mais.
+   ============================================================ */
+
+/* A grade da lista. `minmax(0, 1fr)` no mínimo é o que impede a
+   coluna de esticar: sem ele, uma linha de texto longa (o motivo
+   do conflito, por exemplo) define a largura da coluna e a
+   página inteira ganha rolagem horizontal. */
+.pro__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--gap);
+}
+
+.pro__c {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 0.9rem;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+
+.pro__c:hover {
+  border-color: var(--line-hard);
+  background: var(--bg-elev);
+}
+
+/* A foto é a MESMA propriedade do veículo (`v.img`) que a ficha
+   da frota usa (§25). Não é imagem presa no HTML desta tela:
+   trocar a foto do carro no painel troca aqui também. */
+.pro__foto {
+  flex: 0 0 auto;
+  width: 78px;
+  height: 58px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--bg-chip);
+  border: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pro__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pro__semfoto {
+  font-size: 0.62rem;
+  color: var(--tx-4);
+  text-align: center;
+  padding: 0 0.3rem;
+  line-height: 1.25;
+}
+
+/* `min-width: 0` é o que autoriza o `overflow-wrap` abaixo a
+   agir: sem ele o item de flex NÃO encolhe abaixo do conteúdo,
+   e nenhuma quebra de linha resolve. */
+.pro__bd {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pro__l1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.pro__quem {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--tx-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pro__carro {
+  font-size: 0.78rem;
+  color: var(--tx-3);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pro__datas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+}
+
+.pro__de   { color: var(--tx-4); }
+.pro__seta { color: var(--tx-4); }
+.pro__para { color: var(--tx-1); font-weight: 600; }
+
+.pro__mais {
+  font-size: 0.72rem;
+  color: var(--accent-hover);
+  background: var(--accent-a14);
+  border: 1px solid var(--accent-a30);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  white-space: nowrap;
+}
+
+.pro__val {
+  font-size: 0.78rem;
+  color: var(--tx-2);
+  min-width: 0;
+}
+
+/* O aviso de conflito quebra em duas linhas quando o motivo é
+   longo — é o caso comum, porque o motivo carrega código e
+   período ("Reserva R-0015 (21/09/2026 a 24/09/2026)"). */
+.pro__alerta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--line-soft);
+  min-width: 0;
+}
+
+.pro__alertatx {
+  flex: 1 1 10rem;
+  min-width: 0;
+  font-size: 0.72rem;
+  color: #FCA5A5;
+  overflow-wrap: anywhere;
+}
+
+.pro__seta2 {
+  flex: 0 0 auto;
+  align-self: center;
+  color: var(--tx-4);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Uma coluna no celular. 340px de mínimo em grade já cai
+   sozinho para uma coluna em telas estreitas, mas em 390px o
+   cartão ainda ficaria apertado com a foto ao lado do texto —
+   então abaixo de 460px a foto sobe para cima do conteúdo. */
+@media (max-width: 460px) {
+  .pro__c {
+    flex-wrap: wrap;
+  }
+
+  .pro__foto {
+    width: 100%;
+    height: 132px;
+  }
+
+  .pro__seta2 {
+    display: none;
+  }
+}

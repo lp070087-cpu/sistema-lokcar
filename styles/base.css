@@ -1,0 +1,1047 @@
+/* ============================================================
+   LOK CAR — SISTEMA · base.css
+   ------------------------------------------------------------
+   Tokens e primitivos do sistema de gestão.
+
+   ATENÇÃO — ESTE ARQUIVO NÃO É O styles/base.css DO SITE.
+
+   O site público e a área pública continuam usando
+   ../styles/base.css, que NÃO foi tocado. Aqui vive uma cópia
+   própria porque o sistema é um aplicativo denso: ele precisa de
+   uma paleta mais profunda que a do site (para o conteúdo de
+   tabela sobressair), de escalas de tipografia menores e de
+   primitivos que o site não tem (tabela, crachá, campo, cartão).
+
+   Os valores de MARCA são exatamente os mesmos do site —
+   --accent, --navy, as fontes Archivo/Inter e as mesmas quatro
+   superfícies escuras. A identidade visual aprovada não mudou;
+   o que mudou é só a densidade em volta dela.
+   ============================================================ */
+
+:root {
+  /* --- Superfícies (marca: as três primeiras são as do site) --- */
+  --bg:            #0A0C11;
+  --bg-alt:        #0D1017;
+  --bg-card:       #12161F;
+  --bg-elev:       #171C27;
+
+  /* Camadas próprias do sistema: linha de tabela, linha alternada,
+     hover, campo de formulário e o vão entre blocos. */
+  --bg-deep:       #080A0E;
+  --bg-rail:       #0B0E14;
+  --bg-top:        #0C0F16;
+  --bg-row:        #0F131B;
+  --bg-row-alt:    #0C1017;
+  --bg-row-hover:  #151A24;
+  --bg-field:      #0B0E15;
+  --bg-chip:       #171C27;
+
+  /* --- Acento (vermelho LOK CAR — idêntico ao do site) --- */
+  --accent:        #E11D2E;
+  --accent-hover:  #F5303F;
+  --accent-deep:   #A8121F;
+  --accent-a08:    rgba(225, 29, 46, 0.08);
+  --accent-a14:    rgba(225, 29, 46, 0.14);
+  --accent-a18:    rgba(225, 29, 46, 0.18);
+  --accent-a30:    rgba(225, 29, 46, 0.30);
+  --accent-a55:    rgba(225, 29, 46, 0.55);
+
+  /* --- Azul institucional (mesmo do site) --- */
+  --navy:          #16305C;
+
+  /* --- Texto --- */
+  --tx:            #FFFFFF;
+  --tx-2:          #A7AEBC;
+  --tx-3:          #6E7788;
+  --tx-4:          #4A5261;
+
+  /* --- Linhas --- */
+  --line:          #232936;
+  --line-soft:     #1A1F29;
+  --line-hard:     #2E3646;
+  --line-accent:   rgba(225, 29, 46, 0.35);
+
+  /* --- Tipografia --- */
+  --f-display: 'Archivo', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-sans:    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* --- Medidas do sistema --- */
+  --rail-w:    260px;
+  --rail-w-sm: 76px;
+  --top-h:     64px;
+  --page-pad:  1.75rem;
+  --gap:       1.25rem;
+  --r-sm:      6px;
+  --r-md:      10px;
+  --r-lg:      14px;
+
+  /* --- Movimento --- */
+  --e-out:  cubic-bezier(0.4, 0, 0.2, 1);
+  --t-med:  0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: 0.13s ease-in-out;
+
+  color-scheme: dark;
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--top-h) + 1rem);
+}
+
+body {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--tx);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+body.sis-locked {
+  overflow: hidden;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+address {
+  font-style: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+::selection {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262D3B;
+  border-radius: 6px;
+  border: 2px solid var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #39414F;
+}
+
+/* ============================================================
+   PRIMITIVOS
+   ============================================================ */
+
+/* --- Rótulo miúdo em caixa alta. É o mesmo vocabulário do site
+       (.label no styles/base.css), com a mesma ideia: separar
+       blocos sem gastar peso tipográfico. --- */
+.lbl {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+
+.lbl--accent {
+  color: var(--accent);
+}
+
+/* --- Botões ---------------------------------------------------
+   Três pesos, e só três: sólido (ação principal da tela), de
+   contorno (ação secundária) e silencioso (ação terciária,
+   dentro de linha de tabela). Qualquer quarto peso inventado
+   aqui vira ruído em tela densa. --- */
+.bt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.62rem 1rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background-color var(--t-med), border-color var(--t-med),
+              color var(--t-med), transform var(--t-fast);
+}
+
+.bt:active {
+  transform: translateY(1px);
+}
+
+.bt__ico {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bt--pri {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.bt--pri:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.bt--out {
+  background: transparent;
+  border-color: var(--line-hard);
+  color: var(--tx);
+}
+
+.bt--out:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.bt--sil {
+  background: var(--bg-chip);
+  border-color: var(--line);
+  color: var(--tx-2);
+  padding: 0.5rem 0.7rem;
+  font-size: 0.62rem;
+}
+
+.bt--sil:hover {
+  background: var(--bg-row-hover);
+  border-color: var(--line-hard);
+  color: var(--tx);
+}
+
+.bt--blk {
+  width: 100%;
+}
+
+/* Botão que existe mas depende de algo que ainda não foi ligado.
+   O atributo é `aria-disabled` e NÃO `disabled`: o botão continua
+   recebendo foco e o clique explica o motivo, que é justamente o
+   que o pedido exige ("não deixe botão morto"). */
+.bt[aria-disabled='true'] {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.bt[aria-disabled='true']:hover {
+  background: var(--bg-chip);
+  border-color: var(--line);
+  color: var(--tx-2);
+}
+
+.bt--pri[aria-disabled='true']:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* --- Crachá de status ----------------------------------------
+   A cor carrega o significado e o texto sempre aparece junto —
+   nada é comunicado só por cor, que é o erro clássico de painel
+   administrativo. --- */
+.bdg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.55rem 0.28rem 0.45rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.3;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg-chip);
+  color: var(--tx-2);
+}
+
+.bdg::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.bdg--ok   { color: #4ADE80; border-color: rgba(74, 222, 128, 0.30); background: rgba(74, 222, 128, 0.08); }
+.bdg--go   { color: #60A5FA; border-color: rgba(96, 165, 250, 0.30); background: rgba(96, 165, 250, 0.08); }
+.bdg--warn { color: #FBBF24; border-color: rgba(251, 191, 36, 0.32); background: rgba(251, 191, 36, 0.08); }
+.bdg--bad  { color: #F87171; border-color: rgba(248, 113, 113, 0.32); background: rgba(248, 113, 113, 0.08); }
+.bdg--acc  { color: var(--accent-hover); border-color: var(--accent-a55); background: var(--accent-a14); }
+.bdg--idle { color: var(--tx-3); border-color: var(--line); background: var(--bg-chip); }
+.bdg--vip  { color: #C4B5FD; border-color: rgba(196, 181, 253, 0.30); background: rgba(196, 181, 253, 0.08); }
+
+/* Crachá ainda mais discreto, para uso dentro de célula densa. */
+.bdg--mini {
+  padding: 0.16rem 0.4rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+  border-radius: 4px;
+}
+
+.bdg--mini::before {
+  display: none;
+}
+
+/* --- Cartão --------------------------------------------------- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.3rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.card__title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.card__sub {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--tx-3);
+}
+
+.card__body {
+  padding: 1.3rem;
+}
+
+.card__body--flush {
+  padding: 0;
+}
+
+/* --- Cabeçalho de tela ---------------------------------------- */
+.pghd {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.pghd__title {
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  font-weight: 700;
+}
+
+.pghd__sub {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--tx-2);
+  max-width: 62ch;
+}
+
+.pghd__acts {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* --- Grade de métricas ---------------------------------------- */
+.mgrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.mcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.15rem 1.15rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+/* A barrinha no rodapé do card é o único enfeite permitido aqui:
+   ela marca a leitura (quanto do total aquele número representa)
+   e não é um adorno solto. */
+.mcard__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--line-soft);
+}
+
+.mcard__bar > i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--t-med);
+}
+
+.mcard__bar--ok > i   { background: #4ADE80; }
+.mcard__bar--go > i   { background: #60A5FA; }
+.mcard__bar--warn > i { background: #FBBF24; }
+.mcard__bar--idle > i { background: var(--tx-4); }
+
+.mcard__key {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+
+.mcard__ico {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mcard__val {
+  font-family: var(--f-display);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.mcard__val small {
+  font-size: 0.5em;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--tx-3);
+  margin-right: 0.15em;
+}
+
+.mcard__note {
+  font-size: 0.72rem;
+  color: var(--tx-3);
+}
+
+.mcard__note b {
+  color: var(--tx-2);
+  font-weight: 600;
+}
+
+/* --- Campos --------------------------------------------------- */
+.fld {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.fld__lbl {
+  font-size: 0.63rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+
+.fld__inp,
+.fld__sel,
+.fld__txt {
+  width: 100%;
+  padding: 0.62rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--tx);
+  background: var(--bg-field);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  transition: border-color var(--t-med), background-color var(--t-med);
+}
+
+.fld__inp::placeholder,
+.fld__txt::placeholder {
+  color: var(--tx-4);
+}
+
+.fld__inp:hover,
+.fld__sel:hover,
+.fld__txt:hover {
+  border-color: var(--line-hard);
+}
+
+.fld__inp:focus,
+.fld__sel:focus,
+.fld__txt:focus {
+  outline: none;
+  border-color: var(--accent-a55);
+  background: var(--bg-alt);
+}
+
+.fld__sel {
+  appearance: none;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%236E7788' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 11px;
+  cursor: pointer;
+}
+
+.fld__txt {
+  min-height: 104px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.fld__hint {
+  font-size: 0.7rem;
+  color: var(--tx-3);
+}
+
+.fld__inp:disabled,
+.fld__sel:disabled,
+.fld__txt:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Campo que a Lok Car ainda não definiu. Aparece vazio e com o
+   texto "Dado a configurar" em itálico — nunca com um valor
+   inventado, que é a regra mais dura deste sistema. */
+.fld__inp[data-vazio='true']::placeholder {
+  font-style: italic;
+  color: var(--tx-4);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem var(--gap);
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem var(--gap);
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem var(--gap);
+}
+
+/* --- Busca ----------------------------------------------------- */
+.busca {
+  position: relative;
+  flex: 1 1 260px;
+  max-width: 420px;
+}
+
+.busca__ico {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: var(--tx-3);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.busca__inp {
+  width: 100%;
+  padding: 0.62rem 0.75rem 0.62rem 2.2rem;
+  font-size: 0.85rem;
+  background: var(--bg-field);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  transition: border-color var(--t-med);
+}
+
+.busca__inp::placeholder {
+  color: var(--tx-4);
+}
+
+.busca__inp:focus {
+  outline: none;
+  border-color: var(--accent-a55);
+}
+
+/* --- Abas / filtros em pílula ---------------------------------- */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.tabs__b {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--tx-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  transition: background-color var(--t-med), color var(--t-med), border-color var(--t-med);
+}
+
+.tabs__b:hover {
+  background: var(--bg-row-hover);
+  color: var(--tx);
+}
+
+.tabs__b[aria-selected='true'] {
+  background: var(--accent-a14);
+  border-color: var(--accent-a30);
+  color: var(--accent-hover);
+}
+
+.tabs__n {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.05rem 0.34rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: inherit;
+  letter-spacing: 0;
+}
+
+/* --- Tabela ----------------------------------------------------
+   Só a linha é clicável quando há detalhe. O cabeçalho fica
+   grudado no topo do contêiner de rolagem para não se perder em
+   listas longas. --- */
+.tbl__wrap {
+  overflow-x: auto;
+}
+
+.tbl {
+  min-width: 720px;
+}
+
+.tbl th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.tbl td {
+  padding: 0.78rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--tx-2);
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle;
+}
+
+.tbl tbody tr {
+  background: var(--bg-row);
+  transition: background-color var(--t-fast);
+}
+
+.tbl tbody tr:nth-child(even) {
+  background: var(--bg-row-alt);
+}
+
+.tbl tbody tr[data-abre] {
+  cursor: pointer;
+}
+
+.tbl tbody tr[data-abre]:hover {
+  background: var(--bg-row-hover);
+}
+
+.tbl tbody tr[data-abre]:hover td:first-child {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.tbl__code {
+  font-family: ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tx);
+}
+
+.tbl__nome {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tx);
+}
+
+.tbl__dim {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.71rem;
+  color: var(--tx-3);
+}
+
+.tbl__num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tbl__valor {
+  font-weight: 600;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tbl__acts {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.tbl th:last-child {
+  text-align: right;
+}
+
+.tbl td:last-child {
+  text-align: right;
+}
+
+/* Miniatura do veículo dentro da tabela. */
+.mini {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.mini__img {
+  width: 54px;
+  height: 36px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+}
+
+/* --- Vazio ------------------------------------------------------ */
+.vazio {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.vazio__t {
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--tx-2);
+}
+
+.vazio__d {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--tx-3);
+  max-width: 46ch;
+  margin-inline: auto;
+}
+
+/* --- Aviso de demonstração -------------------------------------
+   Faixa curta que aparece onde o texto pode ser confundido com
+   dado real: contrato, vistoria, financeiro. Nunca decorativa. --- */
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--tx-2);
+  background: var(--accent-a08);
+  border: 1px solid var(--accent-a30);
+  border-radius: var(--r-sm);
+}
+
+.aviso__ico {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 0.1rem;
+  fill: none;
+  stroke: var(--accent-hover);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.aviso b {
+  color: var(--tx);
+  font-weight: 600;
+}
+
+.aviso--neutro {
+  background: var(--bg-section, var(--bg-alt));
+  border-color: var(--line);
+}
+
+.aviso--neutro .aviso__ico {
+  stroke: var(--tx-3);
+}
+
+/* O mesmo aviso, quando não há nada a resolver. Existe porque a
+   ausência de pendência também é informação, e é a que o operador
+   quer ver confirmada antes de entregar a chave — não é hora de
+   usar a faixa vermelha de alerta, que sugeriria o contrário do
+   que o texto diz. */
+.aviso--ok {
+  background: rgba(74, 222, 128, 0.06);
+  border-color: rgba(74, 222, 128, 0.28);
+}
+
+.aviso--ok .aviso__ico {
+  stroke: #4ADE80;
+}
+
+/* --- Pendências (lista marcada) --------------------------------- */
+.pend {
+  display: flex;
+  flex-direction: column;
+}
+
+.pend__i {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.72rem 1.3rem;
+  border-bottom: 1px solid var(--line-soft);
+  transition: background-color var(--t-fast);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.pend__i:last-child {
+  border-bottom: none;
+}
+
+.pend__i:hover {
+  background: var(--bg-row-hover);
+}
+
+.pend__n {
+  min-width: 26px;
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--tx-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.pend__t {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  color: var(--tx-2);
+}
+
+.pend__t b {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--tx);
+}
+
+.pend__seta {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: var(--tx-4);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pend__i:hover .pend__seta {
+  stroke: var(--accent);
+}
+
+.pend__zero {
+  padding: 2.4rem 1.3rem;
+  text-align: center;
+  color: var(--tx-3);
+  font-size: 0.82rem;
+}
+
+/* --- Barra de rolagem horizontal do calendário ------------------ */
+.rolagem-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* --- Utilidades ------------------------------------------------ */
+.u-flex   { display: flex; align-items: center; gap: 0.6rem; }
+.u-between{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.u-wrap   { flex-wrap: wrap; }
+.u-col    { display: flex; flex-direction: column; }
+.u-grow   { flex: 1; min-width: 0; }
+.u-right  { text-align: right; }
+.u-mt     { margin-top: 1rem; }
+.u-mt-lg  { margin-top: 1.75rem; }
+.u-mb     { margin-bottom: 1rem; }
+.u-t2     { color: var(--tx-2); }
+.u-t3     { color: var(--tx-3); }
+.u-t4     { color: var(--tx-4); }
+.u-warn   { color: #FBBF24; }
+.u-sm     { font-size: 0.78rem; }
+.u-xs     { font-size: 0.72rem; }
+.u-b      { font-weight: 600; }
+.u-tab    { font-variant-numeric: tabular-nums; }
+.u-nowrap { white-space: nowrap; }
+.u-oculto { display: none !important; }
+.u-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Acessibilidade ---------- */
+.u-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 4000;
+  padding: 0.9rem 1.3rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.u-skip:focus {
+  left: 0.6rem;
+  top: 0.6rem;
+}
+
+/* ---------- Movimento reduzido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

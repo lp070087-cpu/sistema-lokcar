@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sistema de Gestão | LOK CAR Locadora de Veículos</title>
+<meta name="description" content="Área de gestão da LOK CAR Locadora de Veículos. Reservas, locações, clientes, frota, contratos, financeiro e vistorias." />
+<meta name="theme-color" content="#080A0E" />
+<meta name="robots" content="noindex, nofollow" />
+
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="styles/shell.css" />
+<link rel="stylesheet" href="styles/modulos.css" />
+</head>
+
+<body>
+
+<a class="u-skip" href="#pg">Ir para o conteúdo</a>
+
+<div class="sis" id="sis" data-rail="aberto" data-gaveta="fechada">
+
+  <!-- ============================================================
+       TRILHO DE MENU
+       ------------------------------------------------------------
+       Os cinco grupos são os do pedido: VISÃO GERAL, OPERAÇÃO,
+       DOCUMENTOS, GESTÃO e SISTEMA. Cada item aponta para uma
+       rota real do roteador (#/rota). O rodapé do trilho é o
+       usuário logado, com perfil e saída.
+       ============================================================ -->
+  <aside class="rail" id="rail" aria-label="Menu do sistema">
+
+    <div class="rail__brand">
+      <span class="rail__mark" aria-hidden="true">LK</span>
+      <span class="rail__word">
+        <span class="rail__nome">LOK CAR</span>
+        <span class="rail__sub">Gestão da locadora</span>
+      </span>
+    </div>
+
+    <nav class="rail__nav" id="railNav" aria-label="Módulos do sistema">
+      <!-- Preenchido por scripts/ui.js a partir da lista de módulos,
+           para o menu e o roteador nunca saírem de sincronia. -->
+    </nav>
+
+    <button class="rail__user" type="button" id="railUser" title="Ver perfil e sessão">
+      <span class="rail__avatar" id="railAvatar" aria-hidden="true">AD</span>
+      <span class="rail__perfil">
+        <span class="rail__perfilNome" id="railNome">Administrador</span>
+        <span class="rail__perfilCargo" id="railCargo">Sessão local</span>
+      </span>
+      <span class="rail__sair" id="railSair" role="button" tabindex="-1" title="Sair do sistema">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+          <path d="M10 8l-4 4 4 4M6 12h10" />
+        </svg>
+      </span>
+    </button>
+
+  </aside>
+
+  <div class="veu" id="veu" data-aberto="false" hidden></div>
+
+  <!-- ============================================================ -->
+  <div class="sis__main">
+
+    <header class="top">
+      <button class="top__burger" type="button" id="topBurger" aria-label="Abrir menu" aria-expanded="false" aria-controls="rail">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+      </button>
+
+      <button class="top__recolher" type="button" id="topRecolher" aria-label="Recolher o menu" aria-expanded="true" aria-controls="rail">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l-6 6 6 6" /></svg>
+      </button>
+
+      <p class="top__trilha" id="topTrilha">
+        <b>Visão geral</b>
+        <span aria-hidden="true">/</span>
+        <i id="topTela">Dashboard</i>
+      </p>
+
+      <div class="top__acoes">
+        <span class="top__demo" title="Todos os dados desta área são fictícios, criados para demonstrar o sistema.">
+          Demonstração
+        </span>
+
+        <button class="top__sino" type="button" id="topSino" aria-label="Notificações" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 8a6 6 0 1 0-12 0c0 6-2 7-2 7h16s-2-1-2-7" />
+            <path d="M13.7 20a2 2 0 0 1-3.4 0" />
+          </svg>
+          <span class="top__sinoN" id="topSinoN" hidden>0</span>
+        </button>
+
+        <a class="top__voltar" href="../index.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l-6 6 6 6M4 12h16" /></svg>
+          Ver o site
+        </a>
+      </div>
+    </header>
+
+    <main class="pg" id="pg" tabindex="-1">
+      <div class="pg__inner" id="pgInner">
+        <!-- Cada tela é montada por scripts telas/*.js e injetada aqui.
+             O conteúdo inicial é escrito pelo roteador; manter este
+             parágrafo vazio deixaria a tela piscando em branco se o
+             JS falhasse, então há um aviso explícito abaixo. -->
+        <noscript>
+          <div class="aviso">
+            <svg class="aviso__ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16.5v.01" /></svg>
+            <span>Este sistema precisa de JavaScript para funcionar. Ative o JavaScript neste navegador para ver a área de gestão.</span>
+          </div>
+        </noscript>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL ÚNICO DO SISTEMA
+     ------------------------------------------------------------
+     Um só modal para todo o sistema. O que muda é o conteúdo
+     injetado em #modBd. Isso evita dezenas de modais escondidos
+     no HTML, que é onde esse tipo de tela costuma virar um
+     emaranhado impossível de manter.
+     ============================================================ -->
+<div class="mod" id="mod" role="dialog" aria-modal="true" aria-labelledby="modT" data-aberto="false">
+  <div class="mod__veu" data-fecha-mod></div>
+  <div class="mod__cx" id="modCx">
+    <div class="mod__hd">
+      <div>
+        <h2 class="mod__t" id="modT">—</h2>
+        <p class="mod__sub" id="modSub" hidden></p>
+      </div>
+      <button class="mod__fechar" type="button" id="modFechar" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </div>
+    <div class="mod__bd" id="modBd"></div>
+    <div class="mod__ft" id="modFt"></div>
+  </div>
+</div>
+
+<div class="canto" id="canto" aria-live="polite" aria-atomic="false"></div>
+
+<script src="../scripts/config.js"></script>
+<script src="scripts/dados.js"></script>
+<script src="scripts/sessao.js"></script>
+<script src="scripts/contrato.js"></script>
+<script src="scripts/ui.js"></script>
+<script src="scripts/telas/dashboard.js"></script>
+<script src="scripts/telas/reservas.js"></script>
+<script src="scripts/telas/clientes.js"></script>
+<script src="scripts/telas/locacoes.js"></script>
+<script src="scripts/telas/frota.js"></script>
+<script src="scripts/telas/calendario.js"></script>
+<script src="scripts/telas/prorrogacoes.js"></script>
+<script src="scripts/telas/contratos.js"></script>
+<script src="scripts/telas/financeiro.js"></script>
+<script src="scripts/telas/vistorias.js"></script>
+<script src="scripts/telas/manutencoes.js"></script>
+<script src="scripts/telas/ocorrencias.js"></script>
+<script src="scripts/telas/documentos.js"></script>
+<script src="scripts/telas/notificacoes.js"></script>
+<script src="scripts/telas/configuracoes.js"></script>
+<script src="scripts/app.js"></script>
+
+</body>
+</html>
